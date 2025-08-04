@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  database:
+    container_name: my_construction_helper
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: construction_db
+      POSTGRES_USER: arty
+      POSTGRES_PASSWORD: arty
+    ports:
+      - '5445:5432'
