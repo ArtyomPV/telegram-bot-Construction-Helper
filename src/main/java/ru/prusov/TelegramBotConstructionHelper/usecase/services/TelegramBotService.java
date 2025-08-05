@@ -20,7 +20,7 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
 
     @Override
     public void consume(Update update) {
-        if(update.hasMessage() && update.getMessage().hasText()){
+        if (update.hasMessage() && update.getMessage().hasText()) {
             log.info("it is working");
         }
     }

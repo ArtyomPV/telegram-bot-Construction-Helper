@@ -12,10 +12,10 @@ import java.util.List;
 public class KeyboardFactory {
     public static InlineKeyboardMarkup getInlineKeyboard(List<String> text,
                                                          List<Integer> configuration,
-                                                         List<String> data){
+                                                         List<String> data) {
         List<InlineKeyboardRow> keyboardRows = new ArrayList<>();
         int index = 0;
-        for(Integer buttonRow: configuration){
+        for (Integer buttonRow : configuration) {
             InlineKeyboardRow row = new InlineKeyboardRow();
             for (int i = 0; i < buttonRow; i++) {
                 InlineKeyboardButton button = InlineKeyboardButton.builder()
