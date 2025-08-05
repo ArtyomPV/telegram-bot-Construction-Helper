@@ -3,11 +3,15 @@ package ru.prusov.TelegramBotConstructionHelper.factory;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+
+import java.io.File;
 
 @UtilityClass
 public class AnswerMethodFactory {
@@ -58,6 +62,13 @@ public class AnswerMethodFactory {
         return AnswerCallbackQuery.builder()
                 .callbackQueryId(callbackQueryId)
                 .text(text)
+                .build();
+    }
+
+    public static SendPhoto getSendPhoto(Long chatId, String photoPath){
+        return SendPhoto.builder()
+                .chatId(chatId)
+                .photo(new InputFile(new File(photoPath)))
                 .build();
     }
 }

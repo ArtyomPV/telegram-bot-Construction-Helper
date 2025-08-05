@@ -11,4 +11,6 @@ public class TextConstants {
             4. Оставить заявку на консультацию.
             🤔 Как я могу помочь вам сегодня?
             """;
+    public static final String RESOURCE_PATH = "TelegramBotConstructionHelper/src/main/resources/images/";
+    public static final String LOGO_IMAGE_PATH = "logo.jpg";
 }
