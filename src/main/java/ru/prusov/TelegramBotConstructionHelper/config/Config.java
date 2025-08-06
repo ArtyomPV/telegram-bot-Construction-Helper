@@ -18,4 +18,9 @@ public class Config {
     public TelegramClient getTelegramClient(@Autowired String botToken) {
         return new OkHttpTelegramClient(botToken);
     }
+
+    @Bean
+    public Long adminChatId(@Value("${admin.chatId}") Long adminChatId){
+        return adminChatId;
+    }
 }
