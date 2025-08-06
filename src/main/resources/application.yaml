@@ -3,7 +3,7 @@ spring:
     name: TelegramBotConstructionHelper
 
   datasource:
-    url: jdbc:postgresql://localhost:5445/library_db
+    url: jdbc:postgresql://localhost:5445/construction_db
     username: arty
     password: arty
     driver-class-name: org.postgresql.Driver
@@ -13,7 +13,7 @@ spring:
         format-ddl: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     show-sql: true
 
 bot:
@@ -21,3 +21,6 @@ bot:
   botToken: ${BOT_TOKEN}
 server:
   port: 8081
+
+admin:
+  chatId: 5151658826
