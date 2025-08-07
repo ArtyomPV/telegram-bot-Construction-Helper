@@ -10,6 +10,7 @@ import org.telegram.telegrambots.longpolling.starter.AfterBotRegistration;
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -17,6 +18,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.usecase.commands.UserCommand;
+import ru.prusov.TelegramBotConstructionHelper.usecase.routers.CallbackRouter;
 import ru.prusov.TelegramBotConstructionHelper.usecase.routers.CommandRouter;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.UNKNOWN_START_MESSAGE;
@@ -29,6 +31,7 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
     private final String botToken;
     private final TelegramClient client;
     private final CommandRouter commandRouter;
+    private final CallbackRouter callbackRouter;
 
     @Override
     public void consume(Update update) {
@@ -36,17 +39,32 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
             Message lastUserMessage = update.getMessage();
             if (update.getMessage().hasText()) {
                 String lastUserMessageText = lastUserMessage.getText();
-                CommonInfo commonInfo = getCommonInfo(update);
+                CommonInfo commonInfo = getCommonInfo(lastUserMessage);
                 if (lastUserMessageText.startsWith("/")) {
                     handleCommand(lastUserMessageText, commonInfo);
                 }
 
             }
+        } else if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            CommonInfo commonInfo = getCommonInfo(callbackQuery);
+            handleCallbackQuery(commonInfo);
         }
         if (update.hasMessage() && update.getMessage().hasText()) {
             log.info("it is working");
         }
     }
+
+    private void handleCallbackQuery(CommonInfo commonInfo) {
+
+        callbackRouter.getHandler(commonInfo.getMessageText()).ifPresentOrElse(handler -> {
+            handler.execute(commonInfo);
+        }, () -> {
+            //TODO для коллбэков отдельный обработчик???
+            unknownActionHandler(commonInfo.getChatId());
+        });
+    }
+
 
     private void handleCommand(String lastUserMessageText, CommonInfo commonInfo) {
         UserCommand userCommand = UserCommand.fromString(lastUserMessageText);
@@ -68,11 +86,19 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
 
     }
 
-    private CommonInfo getCommonInfo(Update update) {
+    private CommonInfo getCommonInfo(Message message) {
         return CommonInfo.builder()
-                .chatId(update.getMessage().getChatId())
-                .userFromTelegram(update.getMessage().getFrom())
-                .messageText(update.getMessage().getText())
+                .chatId(message.getChatId())
+                .userFromTelegram(message.getFrom())
+                .messageText(message.getText())
+                .build();
+    }
+
+    private CommonInfo getCommonInfo(CallbackQuery callbackQuery) {
+        return CommonInfo.builder()
+                .chatId(callbackQuery.getMessage().getChatId())
+                .messageText(callbackQuery.getData())
+                .userFromTelegram(callbackQuery.getFrom())
                 .build();
     }
 
