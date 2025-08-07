@@ -15,5 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 public class CommonInfo {
     private Long chatId;
     private String messageText;
+    private Integer messageId;
     private User userFromTelegram;
 }
