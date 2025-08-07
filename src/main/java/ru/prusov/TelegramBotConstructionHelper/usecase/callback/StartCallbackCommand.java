@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.constants.TextConstants;
@@ -32,7 +33,9 @@ public class StartCallbackCommand implements CallbackCommand{
     public void execute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(chatId, RESOURCE_PATH + LOGO_IMAGE_PATH);
-        SendMessage sendMessage = AnswerMethodFactory.getSendMessage(chatId,
+        EditMessageText sendMessage = AnswerMethodFactory.getEditMessageText(
+                chatId,
+                commonInfo.getMessageId(),
                 TextConstants.START_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Строительство", "Инженерные сети", "Автоматика и система управления"),

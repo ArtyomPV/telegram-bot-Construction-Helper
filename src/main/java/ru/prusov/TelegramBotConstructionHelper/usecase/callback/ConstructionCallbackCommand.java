@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -29,8 +30,9 @@ public class ConstructionCallbackCommand implements CallbackCommand {
     @Override
     public void execute(CommonInfo commonInfo) {
         log.info("started command {}", command());
-        SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
+        EditMessageText sendMessage = AnswerMethodFactory.getEditMessageText(
                 commonInfo.getChatId(),
+                commonInfo.getMessageId(),
                 CONSTRUCTION_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Назад"),

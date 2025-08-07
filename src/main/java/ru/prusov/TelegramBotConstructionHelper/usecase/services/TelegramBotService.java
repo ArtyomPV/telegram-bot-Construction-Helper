@@ -91,6 +91,7 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
                 .chatId(message.getChatId())
                 .userFromTelegram(message.getFrom())
                 .messageText(message.getText())
+                .messageId(message.getMessageId())
                 .build();
     }
 
@@ -98,6 +99,7 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
         return CommonInfo.builder()
                 .chatId(callbackQuery.getMessage().getChatId())
                 .messageText(callbackQuery.getData())
+                .messageId(callbackQuery.getMessage().getMessageId())
                 .userFromTelegram(callbackQuery.getFrom())
                 .build();
     }
