@@ -29,7 +29,10 @@ public class AnswerMethodFactory {
         return getSendMessage(chatId, text, null);
     }
 
-    public static EditMessageText getEditMessageText(Long chatId, Integer messageId, String text, InlineKeyboardMarkup keyboardMarkup) {
+    public static EditMessageText getEditMessageText(Long chatId,
+                                                     Integer messageId,
+                                                     String text,
+                                                     InlineKeyboardMarkup keyboardMarkup) {
         return EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(messageId)
@@ -38,11 +41,15 @@ public class AnswerMethodFactory {
                 .build();
     }
 
-    public static EditMessageText getEditMessageText(Long chatId, Integer messageId, String text) {
+    public static EditMessageText getEditMessageText(Long chatId,
+                                                     Integer messageId,
+                                                     String text) {
         return getEditMessageText(chatId, messageId, text, null);
     }
 
-    public static EditMessageText getEditMessageText(CallbackQuery callbackQuery, String text, InlineKeyboardMarkup keyboard) {
+    public static EditMessageText getEditMessageText(CallbackQuery callbackQuery,
+                                                     String text,
+                                                     InlineKeyboardMarkup keyboard) {
         return EditMessageText.builder()
                 .chatId(callbackQuery.getMessage().getChatId())
                 .messageId(callbackQuery.getMessage().getMessageId())
@@ -51,24 +58,27 @@ public class AnswerMethodFactory {
                 .build();
     }
 
-    public static DeleteMessage getDeleteMessage(Long chatId, Integer messageId) {
+    public static DeleteMessage getDeleteMessage(Long chatId,
+                                                 Integer messageId) {
         return DeleteMessage.builder()
                 .chatId(chatId)
                 .messageId(messageId)
                 .build();
     }
 
-    public static AnswerCallbackQuery getAnswerCallbackQuery(String callbackQueryId, String text) {
+    public static AnswerCallbackQuery getAnswerCallbackQuery(String callbackQueryId,
+                                                             String text) {
         return AnswerCallbackQuery.builder()
                 .callbackQueryId(callbackQueryId)
                 .text(text)
                 .build();
     }
 
-    public static SendPhoto getSendPhoto(Long chatId, String photoPath){
+    public static SendPhoto getSendPhoto(Long chatId,
+                                         String photoPath){
         return SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(new File(photoPath)))
+                .photo(new InputFile(photoPath))
                 .build();
     }
 }
