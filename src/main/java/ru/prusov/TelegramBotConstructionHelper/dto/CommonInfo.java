@@ -17,4 +17,5 @@ public class CommonInfo {
     private String messageText;
     private Integer messageId;
     private User userFromTelegram;
+    private String documentName;
 }

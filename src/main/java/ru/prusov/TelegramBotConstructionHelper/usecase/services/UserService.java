@@ -30,4 +30,8 @@ public class UserService {
             return userRepository.save(user);
         });
     }
+
+    public User getUserByChatId(Long chatId){
+        return userRepository.getUserByChatId(chatId).get();
+    }
 }

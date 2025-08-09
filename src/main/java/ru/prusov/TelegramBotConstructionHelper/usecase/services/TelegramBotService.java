@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
+import org.telegram.telegrambots.meta.api.objects.photo.PhotoSize;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -20,6 +21,12 @@ import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.usecase.commands.UserCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.routers.CallbackRouter;
 import ru.prusov.TelegramBotConstructionHelper.usecase.routers.CommandRouter;
+import ru.prusov.TelegramBotConstructionHelper.usecase.routers.StateRouter;
+import ru.prusov.TelegramBotConstructionHelper.usecase.state.State;
+import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
+
+import java.util.List;
+import java.util.Optional;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.UNKNOWN_START_MESSAGE;
 
@@ -32,35 +39,48 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
     private final TelegramClient client;
     private final CommandRouter commandRouter;
     private final CallbackRouter callbackRouter;
+    private final StateService stateService;
+    private final StateRouter stateRouter;
+    private final PhotoService photoService;
 
     @Override
     public void consume(Update update) {
         if (update.hasMessage()) {
             Message lastUserMessage = update.getMessage();
-            if (update.getMessage().hasText()) {
+            if (lastUserMessage.hasText()) {
                 String lastUserMessageText = lastUserMessage.getText();
                 CommonInfo commonInfo = getCommonInfo(lastUserMessage);
                 if (lastUserMessageText.startsWith("/")) {
                     handleCommand(lastUserMessageText, commonInfo);
                 }
 
+
+
+            } else if (lastUserMessage.hasPhoto()) {
+                String caption = lastUserMessage.getCaption();
+                CommonInfo commonInfo = getCommonInfo(lastUserMessage);
+                commonInfo.setDocumentName(caption);
+                List<PhotoSize> photos = lastUserMessage.getPhoto();
+                PhotoSize photoSize = photos.get(photos.size() - 1);
+                photoService.loadPhotoFromMessage(photoSize, commonInfo.getChatId(), caption);
+                UserState userState = stateService.getUserStateByChatId(lastUserMessage.getChatId());
+
+                stateRouter.getHandler(userState).ifPresentOrElse(handler -> handler.handleState(commonInfo),
+                        () -> unknownActionHandler(commonInfo.getChatId()));
+
             }
+
         } else if (update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             CommonInfo commonInfo = getCommonInfo(callbackQuery);
             handleCallbackQuery(commonInfo);
         }
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            log.info("it is working");
-        }
     }
 
     private void handleCallbackQuery(CommonInfo commonInfo) {
-
         callbackRouter.getHandler(commonInfo.getMessageText()).ifPresentOrElse(handler -> {
             handler.execute(commonInfo);
         }, () -> {
-            //TODO для коллбэков отдельный обработчик???
             unknownActionHandler(commonInfo.getChatId());
         });
     }
