@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -30,6 +31,9 @@ public class ConstructionCallbackCommand implements CallbackCommand {
     @Override
     public void execute(CommonInfo commonInfo) {
         log.info("started command {}", command());
+        DeleteMessage deleteMessage = AnswerMethodFactory.getDeleteMessage(
+                commonInfo.getChatId(),
+                commonInfo.getMessageId() - 1);
         EditMessageText sendMessage = AnswerMethodFactory.getEditMessageText(
                 commonInfo.getChatId(),
                 commonInfo.getMessageId(),
@@ -40,6 +44,7 @@ public class ConstructionCallbackCommand implements CallbackCommand {
                         List.of(START)
                 ));
         try {
+            client.execute(deleteMessage);
             client.execute(sendMessage);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);

@@ -3,6 +3,7 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.settings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -33,6 +34,9 @@ public class MainSettingsCallbackCommand implements CallbackCommand {
     public void execute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         stateService.clearUserStateByChatId(chatId);
+        DeleteMessage deleteMessage = AnswerMethodFactory.getDeleteMessage(
+                commonInfo.getChatId(),
+                commonInfo.getMessageId() - 1);
         EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
                 chatId,
                 commonInfo.getMessageId(),
@@ -44,6 +48,7 @@ public class MainSettingsCallbackCommand implements CallbackCommand {
                 )
         );
         try {
+            client.execute(deleteMessage);
             client.execute(editMessageText);
         } catch (TelegramApiException e) {
             log.error("Не выполнен метод {}", MainSettingsCallbackCommand.class.getSimpleName());
