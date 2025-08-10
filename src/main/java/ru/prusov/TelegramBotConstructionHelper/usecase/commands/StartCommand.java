@@ -64,7 +64,7 @@ public class StartCommand implements Command {
         );
 
         Photo photo = photoService.getPhotoByPhotoName("logo").orElse(null);
-        log.info(photo.toString());
+
         if(photo != null){
             SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(chatId, photo.getPhotoId());
             try {

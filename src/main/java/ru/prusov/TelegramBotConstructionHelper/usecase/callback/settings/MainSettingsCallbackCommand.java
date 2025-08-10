@@ -16,6 +16,7 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import java.util.List;
 
+import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.MAIN_SETTINGS_MESSAGE;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.*;
 
 @Slf4j
@@ -40,11 +41,11 @@ public class MainSettingsCallbackCommand implements CallbackCommand {
         EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
                 chatId,
                 commonInfo.getMessageId(),
-                "Hello",
+                MAIN_SETTINGS_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
-                        List.of("Сменить логотип", "Назад"),
-                        List.of(1, 1),
-                        List.of(LOGO_CHANGE, START)
+                        List.of("Сменить логотип", "Добавить завершенный объект", "Назад"),
+                        List.of(1, 1, 1),
+                        List.of(LOGO_CHANGE, ADD_CONSTRUCTION_ITEM, START)
                 )
         );
         try {
