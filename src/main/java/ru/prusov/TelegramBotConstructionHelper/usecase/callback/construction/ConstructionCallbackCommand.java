@@ -1,20 +1,23 @@
-package ru.prusov.TelegramBotConstructionHelper.usecase.callback;
+package ru.prusov.TelegramBotConstructionHelper.usecase.callback.construction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData;
 
 import java.util.List;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.CONSTRUCTION_MESSAGE;
-import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.START;
+import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.*;
 
 @Slf4j
 @Component
@@ -30,14 +33,14 @@ public class ConstructionCallbackCommand implements CallbackCommand {
     @Override
     public void execute(CommonInfo commonInfo) {
         log.info("started command {}", command());
-        EditMessageText sendMessage = AnswerMethodFactory.getEditMessageText(
+
+        SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
                 commonInfo.getChatId(),
-                commonInfo.getMessageId(),
                 CONSTRUCTION_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
-                        List.of(1),
-                        List.of(START)
+                        List.of("Реализованные объекты строительства", "Интересные статьи", "Связаться с нами", "Назад"),
+                        List.of(1, 1, 1, 1),
+                        List.of(REALIZED_CONSTRUCTION, ARTICLE_CONSTRUCTION, CONTACT_CONSTRUCTION, START)
                 ));
         try {
             client.execute(sendMessage);

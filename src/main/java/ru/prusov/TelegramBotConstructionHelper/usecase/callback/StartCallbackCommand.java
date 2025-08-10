@@ -78,6 +78,7 @@ public class StartCallbackCommand implements CallbackCommand{
             }
         } else {
             try {
+                client.executeAsync(deleteMessage);
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
                 log.error(e.getMessage());
