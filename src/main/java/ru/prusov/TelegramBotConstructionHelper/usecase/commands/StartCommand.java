@@ -62,13 +62,12 @@ public class StartCommand implements Command {
                 TextConstants.START_MESSAGE,
                 inlineKeyboard
         );
-
-        Photo photo = photoService.getPhotoByPhotoName("logo").orElse(null);
-        log.info(photo.toString());
-        if(photo != null){
+        if(photoService.existsByName("logo")){
+            log.info("Photo is found.");
+        Photo photo = photoService.getPhotoByPhotoName("logo").get();
             SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(chatId, photo.getPhotoId());
             try {
-                client.execute(sendPhoto);
+//                client.execute(sendPhoto);
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
                 throw new RuntimeException(e);
@@ -77,6 +76,7 @@ public class StartCommand implements Command {
             try {
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
+                log.error("photo is not found");
                 log.error(e.getMessage());
             }
         }

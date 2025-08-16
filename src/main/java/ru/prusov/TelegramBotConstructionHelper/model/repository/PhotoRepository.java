@@ -12,5 +12,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     @Query("select p from Photo p where p.photoName = :photoName")
     Optional<Photo> findByPhotoName(@Param("photoName") String photoName);
 
+    boolean existsByName(String name);
+
 
 }

@@ -37,4 +37,13 @@ public class PhotoService {
     public Optional<Photo> getPhotoByPhotoName(String photoName) {
         return photoRepository.findByPhotoName(photoName);
     }
+    @Transactional(readOnly = true)
+    public boolean existsByName(String name) {
+        if (name == null || name.isBlank()) {
+            return false;
+        }
+        return photoRepository.existsByName(name);
+        // если нужно игнорировать регистр:
+        // return thingRepository.existsByNameIgnoreCase(name);
+    }
 }
