@@ -1,6 +1,7 @@
 package ru.prusov.TelegramBotConstructionHelper.usecase.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
@@ -13,6 +14,7 @@ import ru.prusov.TelegramBotConstructionHelper.model.repository.PhotoRepository;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PhotoService {
@@ -35,6 +37,16 @@ public class PhotoService {
     }
     @Transactional(readOnly = true)
     public Optional<Photo> getPhotoByPhotoName(String photoName) {
+        log.info("Start server getPhotoByPhotoName");
         return photoRepository.findByPhotoName(photoName);
+    }
+    @Transactional(readOnly = true)
+    public boolean existsByName(String name) {
+        if (name == null || name.isBlank()) {
+            return false;
+        }
+        return getPhotoByPhotoName(name).isPresent();
+        // если нужно игнорировать регистр:
+        // return thingRepository.existsByNameIgnoreCase(name);
     }
 }

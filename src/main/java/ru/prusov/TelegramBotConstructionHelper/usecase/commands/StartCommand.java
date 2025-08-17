@@ -19,6 +19,7 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.services.PhotoService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.LOGO_IMAGE_PATH;
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.RESOURCE_PATH;
@@ -62,23 +63,24 @@ public class StartCommand implements Command {
                 TextConstants.START_MESSAGE,
                 inlineKeyboard
         );
-
-        Photo photo = photoService.getPhotoByPhotoName("logo").orElse(null);
-
-        if(photo != null){
+        Optional<Photo> logo = photoService.getPhotoByPhotoName("logo");
+        if (logo.isPresent()) {
+            Photo photo = logo.get();
             SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(chatId, photo.getPhotoId());
             try {
                 client.execute(sendPhoto);
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
+                log.error("Don`t execute method: {}", e.getMessage());
             }
         } else {
             try {
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
+                log.error("photo is not found");
                 log.error(e.getMessage());
             }
         }
+
     }
 }
