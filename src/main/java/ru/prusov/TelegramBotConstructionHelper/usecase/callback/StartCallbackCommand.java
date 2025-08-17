@@ -21,6 +21,7 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.services.PhotoService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.LOGO_IMAGE_PATH;
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.RESOURCE_PATH;
@@ -30,7 +31,7 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.role.Role.ADMIN;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StartCallbackCommand implements CallbackCommand{
+public class StartCallbackCommand implements CallbackCommand {
     private final TelegramClient client;
     private final UserService userService;
     private final PhotoService photoService;
@@ -63,26 +64,25 @@ public class StartCallbackCommand implements CallbackCommand{
                 chatId,
                 TextConstants.START_MESSAGE,
                 inlineKeyboard
-                );
-
-        Photo photo = photoService.getPhotoByPhotoName("logo").orElse(null);
-        log.info(photo.toString());
-        if(photo != null){
+        );
+        Optional<Photo> logo = photoService.getPhotoByPhotoName("logo");
+        if (logo.isPresent()) {
+            Photo photo = logo.get();
             SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(chatId, photo.getPhotoId());
             try {
-                client.executeAsync(deleteMessage);
                 client.execute(sendPhoto);
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
+                log.error("Don`t execute method: {}", e.getMessage());
             }
         } else {
             try {
-                client.executeAsync(deleteMessage);
                 client.execute(sendMessage);
             } catch (TelegramApiException e) {
+                log.error("photo is not found");
                 log.error(e.getMessage());
             }
         }
     }
+
 }
