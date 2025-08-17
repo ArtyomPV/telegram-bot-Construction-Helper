@@ -52,8 +52,15 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
                 CommonInfo commonInfo = getCommonInfo(lastUserMessage);
                 if (lastUserMessageText.startsWith("/")) {
                     handleCommand(lastUserMessageText, commonInfo);
+                    return;
                 }
-
+                Long chatId = commonInfo.getChatId();
+                UserState userState = stateService.getUserStateByChatId(chatId);
+                stateRouter.getHandler(userState).ifPresentOrElse(handle -> {
+                    handle.handleState(commonInfo);
+                }, () -> {
+                    unknownActionHandler(chatId);
+                });
 
 
             } else if (lastUserMessage.hasPhoto()) {
