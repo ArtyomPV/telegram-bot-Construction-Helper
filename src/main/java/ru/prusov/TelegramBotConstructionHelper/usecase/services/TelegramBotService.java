@@ -61,14 +61,13 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
                 }, () -> {
                     unknownActionHandler(chatId);
                 });
-
-
             } else if (lastUserMessage.hasPhoto()) {
                 String caption = lastUserMessage.getCaption();
-                CommonInfo commonInfo = getCommonInfo(lastUserMessage);
-                commonInfo.setDocumentName(caption);
                 List<PhotoSize> photos = lastUserMessage.getPhoto();
                 PhotoSize photoSize = photos.get(photos.size() - 1);
+                CommonInfo commonInfo = getCommonInfo(lastUserMessage);
+                commonInfo.setDocumentName(caption);
+                commonInfo.setFileId(photoSize.getFileId());
                 photoService.loadPhotoFromMessage(photoSize, commonInfo.getChatId(), caption);
                 UserState userState = stateService.getUserStateByChatId(lastUserMessage.getChatId());
 
