@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -30,13 +31,14 @@ public class AddConstructionItemCallbackCommand implements CallbackCommand {
     @Override
     public void execute(CommonInfo commonInfo) {
         stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.WAITING_TITLE_CONSTRUCTION_ITEM);
-        SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
+        EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
                 commonInfo.getChatId(),
+                commonInfo.getMessageId(),
                 ASK_TITLE_CONSTRUCTION_ITEM
         );
 
         try {
-            client.execute(sendMessage);
+            client.execute(editMessageText);
         } catch (TelegramApiException e) {
             log.error("Не выполнен запрос: наименование объекта - класс {}",
                     AddConstructionItemCallbackCommand.class.getSimpleName());

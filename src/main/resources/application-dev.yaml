@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5445/construction_db
+    username: arty
+    password: arty
+    driver-class-name: org.postgresql.Driver
+
+bot:
+  botUsername: java test bot
+  botToken: 7350864573:AAFRpqr2MsIPmeuJiPT6BXb06fE317McryA
