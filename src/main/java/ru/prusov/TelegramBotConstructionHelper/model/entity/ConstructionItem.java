@@ -18,5 +18,6 @@ public class ConstructionItem {
     Long id;
     String title;
     String photoFileId;
+    @Column(length = 1500)
     String description;
 }
