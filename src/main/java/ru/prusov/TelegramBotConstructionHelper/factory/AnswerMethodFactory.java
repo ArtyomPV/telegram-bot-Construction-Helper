@@ -5,9 +5,11 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
@@ -15,7 +17,9 @@ import java.io.File;
 
 @UtilityClass
 public class AnswerMethodFactory {
-    public static SendMessage getSendMessage(Long chatId, String text, ReplyKeyboard keyboard) {
+    public static SendMessage getSendMessage(Long chatId,
+                                             String text,
+                                             ReplyKeyboard keyboard) {
 
         return SendMessage.builder()
                 .chatId(chatId)
@@ -25,8 +29,11 @@ public class AnswerMethodFactory {
                 .build();
     }
 
-    public static SendMessage getSendMessage(Long chatId, String text) {
-        return getSendMessage(chatId, text, null);
+    public static SendMessage getSendMessage(Long chatId,
+                                             String text) {
+        return getSendMessage(chatId,
+                text,
+                null);
     }
 
     public static EditMessageText getEditMessageText(Long chatId,
@@ -44,7 +51,10 @@ public class AnswerMethodFactory {
     public static EditMessageText getEditMessageText(Long chatId,
                                                      Integer messageId,
                                                      String text) {
-        return getEditMessageText(chatId, messageId, text, null);
+        return getEditMessageText(chatId,
+                messageId,
+                text,
+                null);
     }
 
     public static EditMessageText getEditMessageText(CallbackQuery callbackQuery,
@@ -79,6 +89,16 @@ public class AnswerMethodFactory {
         return SendPhoto.builder()
                 .chatId(chatId)
                 .photo(new InputFile(photoPath))
+                .build();
+    }
+
+    public static EditMessageMedia getEditMessageMedia(Long chatId,
+                                                       int messageId,
+                                                       String photoPath){
+        return EditMessageMedia.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .media(new InputMediaPhoto(photoPath))
                 .build();
     }
 }
