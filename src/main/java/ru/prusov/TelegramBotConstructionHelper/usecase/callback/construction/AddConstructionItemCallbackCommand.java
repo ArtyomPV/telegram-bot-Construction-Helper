@@ -40,7 +40,7 @@ public class AddConstructionItemCallbackCommand implements CallbackCommand {
         try {
             client.execute(editMessageText);
         } catch (TelegramApiException e) {
-            log.error("Не выполнен запрос: наименование объекта - класс {}",
+            log.error("Request failed: object name - class {}",
                     AddConstructionItemCallbackCommand.class.getSimpleName());
         }
     }

@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.dto.ConstructionItemDto;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ConstructionItem;
@@ -19,77 +18,65 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.services.ConstructionItem
 
 import java.util.List;
 
-import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.NO_CONSTRUCTION_ITEM;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.*;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RealizedConstructionCallbackCommand implements CallbackCommand {
+public class NextConstructionItemCallbackCommand implements CallbackCommand {
     private final TelegramClient client;
     private final ConstructionItemService constructionItemService;
     private final ConstructionItemDtoService constructionItemDtoService;
 
     @Override
     public String command() {
-        return REALIZED_CONSTRUCTION;
+        return NEXT_CONSTRUCTION;
     }
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        log.info("started method {}", RealizedConstructionCallbackCommand.class.getSimpleName());
-        constructionItemService.getFirst().ifPresentOrElse(
-                constructionItem -> {
+        Long chatId = commonInfo.getChatId();
+        Long idCurrentConstructionItem = constructionItemDtoService.getConstructionItemDto().getId();
+        ConstructionItem currentConstructionItem = constructionItemService.getConstructionItemById(idCurrentConstructionItem);
+
+        constructionItemService.getNext(currentConstructionItem).ifPresentOrElse(
+                nextConstructionItem -> {
+                    showNextConstructionItem(nextConstructionItem, chatId);
+                    constructionItemDtoService.saveConstructionItemDto(nextConstructionItem);
+                },
+                () -> {
+                    ConstructionItem constructionItem = constructionItemService.getFirst().get();
+                    showNextConstructionItem(constructionItem, chatId);
                     constructionItemDtoService.saveConstructionItemDto(constructionItem);
-                    sendContent(commonInfo, constructionItem);
-                }, () -> {
-                    sendEmptyContent(commonInfo);
                 }
         );
-
-
     }
 
-    private void sendEmptyContent(CommonInfo commonInfo) {
-        EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId(),
-                NO_CONSTRUCTION_ITEM,
-                KeyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
-                        List.of(1),
-                        List.of(CONSTRUCTION)
-                )
+    private void showNextConstructionItem(ConstructionItem nextConstructionItem, Long chatId) {
+        constructionItemDtoService.saveConstructionItemDto(nextConstructionItem);
+        SendMessage titleText = AnswerMethodFactory.getSendMessage(
+                chatId,
+                nextConstructionItem.getTitle()
         );
-        try {
-            client.execute(editMessageText);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void sendContent(CommonInfo commonInfo, ConstructionItem constructionItem) {
-        EditMessageText titleText = AnswerMethodFactory.getEditMessageText(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId(),
-                constructionItem.getTitle());
         SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(
-                commonInfo.getChatId(),
-                constructionItem.getPhotoFileId());
+                chatId,
+                nextConstructionItem.getPhotoFileId()
+        );
         SendMessage descriptionText = AnswerMethodFactory.getSendMessage(
-                commonInfo.getChatId(),
-                constructionItem.getDescription(),
+                chatId,
+                nextConstructionItem.getDescription(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Предыдущий", "Следующий", "Назад"),
                         List.of(2, 1),
                         List.of(PREV_CONSTRUCTION, NEXT_CONSTRUCTION, CONSTRUCTION)
                 ));
+
         try {
             client.execute(titleText);
             client.execute(sendPhoto);
             client.execute(descriptionText);
         } catch (TelegramApiException e) {
-            log.error("Request failed: object name - class {}", RealizedConstructionCallbackCommand.class.getSimpleName());
+            log.error("Request failed: object name - class {}", NextConstructionItemCallbackCommand.class.getSimpleName());
         }
     }
 }

@@ -6,6 +6,11 @@ import ru.prusov.TelegramBotConstructionHelper.model.entity.ConstructionItem;
 import java.util.Optional;
 
 public interface ConstructionItemRepository extends JpaRepository<ConstructionItem, Long> {
-    public Optional<ConstructionItem> findFirstByOrderByIdAsc();
-    public Optional<ConstructionItem> findFirstByIdGreaterThanOrderByIdAsc(Long id);
+    Optional<ConstructionItem> findFirstByOrderByIdAsc();
+
+    Optional<ConstructionItem> findFirstByIdGreaterThanOrderByIdAsc(Long id);
+
+    Optional<ConstructionItem> findFirstByIdLessThanOrderByIdDesc(Long id);
+
+    Optional<ConstructionItem> findFirstByOrderByIdDesc();
 }
