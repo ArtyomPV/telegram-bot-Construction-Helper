@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -37,32 +39,37 @@ public class PreviousConstructionItemCallbackCommand implements CallbackCommand 
         Long chatId = commonInfo.getChatId();
         Long idCurrentConstructionItem = constructionItemDtoService.getConstructionItemDto().getId();
         ConstructionItem currentConstructionItem = constructionItemService.getConstructionItemById(idCurrentConstructionItem);
+
         constructionItemService.getPrev(currentConstructionItem).ifPresentOrElse(
                 prevConstructionItem -> {
-                    showPrevConstructionItem(prevConstructionItem, chatId);
+                    showPrevConstructionItem(prevConstructionItem, chatId, commonInfo);
                     constructionItemDtoService.saveConstructionItemDto(prevConstructionItem);
 
                 },
                 () -> {
                     ConstructionItem constructionItem = constructionItemService.getLast().get();
-                    showPrevConstructionItem(constructionItem, chatId);
+                    showPrevConstructionItem(constructionItem, chatId,commonInfo);
                     constructionItemDtoService.saveConstructionItemDto(constructionItem);
                 }
         );
     }
 
-    private void showPrevConstructionItem(ConstructionItem prevConstructionItem, Long chatId) {
+    private void showPrevConstructionItem(ConstructionItem prevConstructionItem,
+                                          Long chatId,
+                                          CommonInfo commonInfo) {
+
         constructionItemDtoService.saveConstructionItemDto(prevConstructionItem);
-        SendMessage titleText = AnswerMethodFactory.getSendMessage(
-                chatId,
-                prevConstructionItem.getTitle()
-        );
-        SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(
-                chatId,
-                prevConstructionItem.getPhotoFileId()
-        );
-        SendMessage descriptionText = AnswerMethodFactory.getSendMessage(
-                chatId,
+
+        EditMessageText titleText = AnswerMethodFactory.getEditMessageText(chatId,
+                commonInfo.getMessageId() - 2,
+                prevConstructionItem.getTitle());
+
+        EditMessageMedia sendPhoto = AnswerMethodFactory.getEditMessageMedia(chatId,
+                commonInfo.getMessageId() - 1,
+                prevConstructionItem.getPhotoFileId());
+
+        EditMessageText descriptionText = AnswerMethodFactory.getEditMessageText(chatId,
+                commonInfo.getMessageId(),
                 prevConstructionItem.getDescription(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Предыдущий", "Следующий", "Назад"),

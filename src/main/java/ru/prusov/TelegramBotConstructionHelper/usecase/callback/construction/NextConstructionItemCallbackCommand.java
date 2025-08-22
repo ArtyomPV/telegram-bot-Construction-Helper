@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -41,29 +42,33 @@ public class NextConstructionItemCallbackCommand implements CallbackCommand {
 
         constructionItemService.getNext(currentConstructionItem).ifPresentOrElse(
                 nextConstructionItem -> {
-                    showNextConstructionItem(nextConstructionItem, chatId);
+                    showNextConstructionItem(nextConstructionItem, chatId, commonInfo);
                     constructionItemDtoService.saveConstructionItemDto(nextConstructionItem);
                 },
                 () -> {
                     ConstructionItem constructionItem = constructionItemService.getFirst().get();
-                    showNextConstructionItem(constructionItem, chatId);
+                    showNextConstructionItem(constructionItem, chatId, commonInfo);
                     constructionItemDtoService.saveConstructionItemDto(constructionItem);
                 }
         );
     }
 
-    private void showNextConstructionItem(ConstructionItem nextConstructionItem, Long chatId) {
+    private void showNextConstructionItem(ConstructionItem nextConstructionItem,
+                                          Long chatId,
+                                          CommonInfo commonInfo) {
+
         constructionItemDtoService.saveConstructionItemDto(nextConstructionItem);
-        SendMessage titleText = AnswerMethodFactory.getSendMessage(
-                chatId,
-                nextConstructionItem.getTitle()
-        );
-        SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(
-                chatId,
-                nextConstructionItem.getPhotoFileId()
-        );
-        SendMessage descriptionText = AnswerMethodFactory.getSendMessage(
-                chatId,
+
+        EditMessageText titleText = AnswerMethodFactory.getEditMessageText(chatId,
+                commonInfo.getMessageId() - 2,
+                nextConstructionItem.getTitle());
+
+        EditMessageMedia sendPhoto = AnswerMethodFactory.getEditMessageMedia(chatId,
+                commonInfo.getMessageId() - 1,
+                nextConstructionItem.getPhotoFileId());
+
+        EditMessageText descriptionText = AnswerMethodFactory.getEditMessageText(chatId,
+                commonInfo.getMessageId(),
                 nextConstructionItem.getDescription(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Предыдущий", "Следующий", "Назад"),
