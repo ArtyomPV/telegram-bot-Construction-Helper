@@ -3,8 +3,6 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.construction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -48,7 +46,7 @@ public class PreviousConstructionItemCallbackCommand implements CallbackCommand 
                 },
                 () -> {
                     ConstructionItem constructionItem = constructionItemService.getLast().get();
-                    showPrevConstructionItem(constructionItem, chatId,commonInfo);
+                    showPrevConstructionItem(constructionItem, chatId, commonInfo);
                     constructionItemDtoService.saveConstructionItemDto(constructionItem);
                 }
         );

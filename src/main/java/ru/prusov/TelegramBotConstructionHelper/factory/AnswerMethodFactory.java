@@ -13,7 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
-import java.io.File;
 
 @UtilityClass
 public class AnswerMethodFactory {
@@ -85,7 +84,7 @@ public class AnswerMethodFactory {
     }
 
     public static SendPhoto getSendPhoto(Long chatId,
-                                         String photoPath){
+                                         String photoPath) {
         return SendPhoto.builder()
                 .chatId(chatId)
                 .photo(new InputFile(photoPath))
@@ -94,7 +93,7 @@ public class AnswerMethodFactory {
 
     public static EditMessageMedia getEditMessageMedia(Long chatId,
                                                        int messageId,
-                                                       String photoPath){
+                                                       String photoPath) {
         return EditMessageMedia.builder()
                 .chatId(chatId)
                 .messageId(messageId)

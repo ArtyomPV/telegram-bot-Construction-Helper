@@ -1,7 +1,6 @@
 package ru.prusov.TelegramBotConstructionHelper.usecase.services;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ConstructionItem;
@@ -23,10 +22,9 @@ public class ConstructionItemService {
         return constructionItemRepository.findFirstByOrderByIdAsc();
     }
 
-    public Optional<ConstructionItem> getLast(){
+    public Optional<ConstructionItem> getLast() {
         return constructionItemRepository.findFirstByOrderByIdDesc();
     }
-
 
 
     public Optional<ConstructionItem> getNext(ConstructionItem currentItem) {
