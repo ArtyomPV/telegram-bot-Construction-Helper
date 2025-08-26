@@ -1,5 +1,3 @@
-
-
 ```bash
 docker-compose -f bot-docker-compose.yml up -d
 ```
@@ -26,8 +24,4 @@ docker volume rm $(docker volume ls -q)
 
 ```bash
 docker volume ls
-```
-
-```bash
- docker exec -it db psql -U arty -d tbcha_db
 ```
