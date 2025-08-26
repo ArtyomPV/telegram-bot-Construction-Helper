@@ -27,14 +27,16 @@ services:
       POSTGRES_DB: tbcha_db
       POSTGRES_USER: arty
       POSTGRES_PASSWORD: arty
-      BOT_USERNAME: Norman
-      BOT_TOKEN: 7278897959:AAGbd9Hb69O8TNPs9zKt5LfSS7EDOG4ek8U
+      BOT_USERNAME: java test bot
+      BOT_TOKEN: 7350864573:AAFRpqr2MsIPmeuJiPT6BXb06fE317McryA
+#      BOT_USERNAME: Norman
+#      BOT_TOKEN: 7278897959:AAGbd9Hb69O8TNPs9zKt5LfSS7EDOG4ek8U
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
-    restart: on-failure
+    restart: unless-stopped
 
 volumes:
   pgdata:
