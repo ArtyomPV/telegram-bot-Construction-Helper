@@ -1,0 +1,34 @@
+# changelog-1.0/001-create-photos-table.yml
+# Создает таблицу photos для хранения информации о фотографиях,
+# связывая их с пользователями.
+
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-photos-table
+      author: Prusov # Укажите ваше имя/имя разработчика
+      changes:
+        - createTable:
+            tableName: photos # Соответствует @Table(name = "photos")
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: photoId # Соответствует полю photoId
+                  type: VARCHAR(255) # Предполагаем, что photoId - это строка
+                  # nullable: true, так как не указано constraints(nullable=false)
+              - column:
+                  name: photoName # Соответствует полю photoName
+                  type: VARCHAR(255)
+                  # nullable: true
+              - column:
+                  name: user_id # Соответствует полю user (foreign key)
+                  type: BIGINT # Должен соответствовать типу ID пользователя (Long -> BIGINT)
+                  constraints:
+                    nullable: false # Соответствует @ManyToOne(..., optional = false)
+                    foreignKey: true
+                    references: users(id) # Ссылка на столбец id таблицы users
