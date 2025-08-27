@@ -18,17 +18,26 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: photoId # Соответствует полю photoId
+                  name: photo_id # Соответствует полю photoId
                   type: VARCHAR(255) # Предполагаем, что photoId - это строка
                   # nullable: true, так как не указано constraints(nullable=false)
               - column:
-                  name: photoName # Соответствует полю photoName
+                  name: photo_name # Соответствует полю photoName
                   type: VARCHAR(255)
                   # nullable: true
               - column:
-                  name: user_id # Соответствует полю user (foreign key)
+                  name: user_id # Столбец для внешнего ключа
                   type: BIGINT # Должен соответствовать типу ID пользователя (Long -> BIGINT)
                   constraints:
                     nullable: false # Соответствует @ManyToOne(..., optional = false)
-                    foreignKey: true
-                    references: users(id) # Ссылка на столбец id таблицы users
+                    # foreignKey: true # Эта строка больше не нужна
+            # Добавляем определение внешнего ключа как отдельный элемент после столбцов
+            # Вместо foreignKeyName в описании столбца, мы явно определяем constraint
+            foreignKey:
+              name: fk_photos_user_id # Имя для внешнего ключа
+              baseTableName: photos # Таблица, где находится внешний ключ
+              baseColumnNames: user_id # Столбец(ы) в текущей таблице
+              referencedTableName: users # Таблица, на которую ссылаемся
+              referencedColumnNames: id # Столбец(ы) в целевой таблице
+              # constraints: # Можно добавить дополнительные ограничения, если нужно
+              #   deleteCascade: true # Пример: удалять фото при удалении пользователя

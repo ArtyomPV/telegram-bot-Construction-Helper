@@ -14,7 +14,7 @@ databaseChangeLog:
                     primaryKey: true # Указывает, что это первичный ключ
                     nullable: false # Первичный ключ не может быть null
               - column:
-                  name: chatId # Соответствует полю chatId
+                  name: chat_id # Соответствует полю chatId
                   type: BIGINT # Должен быть таким же, как и Java тип Long
                   constraints:
                     nullable: false # Соответствует @Column(nullable = false)
