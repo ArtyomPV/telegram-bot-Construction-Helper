@@ -1,0 +1,30 @@
+# changelog-1.0/003-create-construction-item-table.yml
+# Создает таблицу project для хранения информации о строительных элементах (ConstructionItem).
+
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-construction-item-table
+      author: Prusov # Укажите ваше имя/имя разработчика
+      changes:
+        - createTable:
+            tableName: project # Соответствует @Table(name = "project")
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title # Соответствует полю title
+                  type: VARCHAR(255) # Типичный размер для заголовка
+                  # nullable: true, так как не указано constraints(nullable=false)
+              - column:
+                  name: photo_file_id # Соответствует полю photoFileId
+                  type: VARCHAR(255) # Предполагаем, что это идентификатор файла, может быть строкой
+                  # nullable: true
+              - column:
+                  name: description # Соответствует полю description
+                  type: VARCHAR(1500) # Соответствует @Column(length = 1500)
+                  # nullable: true

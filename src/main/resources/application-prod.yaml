@@ -1,4 +1,7 @@
 spring:
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}

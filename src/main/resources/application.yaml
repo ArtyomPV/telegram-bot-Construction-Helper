@@ -1,7 +1,9 @@
 spring:
   application:
     name: TelegramBotConstructionHelper
-
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
 
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
@@ -14,7 +16,7 @@ spring:
         format-ddl: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
 
 bot:

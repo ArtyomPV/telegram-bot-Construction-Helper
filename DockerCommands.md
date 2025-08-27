@@ -25,3 +25,14 @@ docker volume rm $(docker volume ls -q)
 ```bash
 docker volume ls
 ```
+
+```bash
+ docker exec -it db psql -U arty -d tbcha_db
+```
+
+```bash
+docker image rm telegrambotconstructionhelper-app
+```
+```bash
+docker start todo_tb
+```

@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 000-create-users-table
+      author: Prusov # Укажите ваше имя/имя разработчика
+      changes:
+        - createTable:
+            tableName: users # Имя таблицы, соответствующее @Table(name = "users")
+            columns:
+              - column:
+                  name: id # Соответствует полю id
+                  type: BIGINT # Обычно для ID используется BIGINT
+                  autoIncrement: true # Соответствует GenerationType.IDENTITY
+                  constraints:
+                    primaryKey: true # Указывает, что это первичный ключ
+                    nullable: false # Первичный ключ не может быть null
+              - column:
+                  name: chat_id # Соответствует полю chatId
+                  type: BIGINT # Должен быть таким же, как и Java тип Long
+                  constraints:
+                    nullable: false # Соответствует @Column(nullable = false)
+              - column:
+                  name: username # Соответствует полю username
+                  type: VARCHAR(255) # Или другой подходящий тип для строки
+                  # nullable: true (по умолчанию, если не указано false, так как в Java поле username не помечено nullable=false)
+              - column:
+                  name: state # Соответствует полю state
+                  type: VARCHAR(50) # Тип для хранения enum значений (строка)
+                  defaultValue: NONE # Соответствует UserState state = UserState.NONE
+                  constraints:
+                    nullable: false # Соответствует @Column(nullable = false)
+              - column:
+                  name: role # Соответствует полю role
+                  type: VARCHAR(50) # Тип для хранения enum значений (строка)
+                  constraints:
+                    nullable: false # Соответствует @Column(nullable = false)
