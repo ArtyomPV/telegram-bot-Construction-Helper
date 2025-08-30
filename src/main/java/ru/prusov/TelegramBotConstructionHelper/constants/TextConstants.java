@@ -29,4 +29,15 @@ public class TextConstants {
     public static final String ASK_DESCRIPTION_CONSTRUCTION_ITEM = "Введите описание построенного объекта";
     public static final String ASK_PHOTO_CONSTRUCTION_ITEM = "Загрузите изображение построенного объекта";
     public static final String MAIN_SETTINGS_MESSAGE = "Настройка контента";
+    public static final String CONSTRUCTION_MENU_CONTACTS = """
+            
+            
+            
+            Для получения консультации 📃
+            
+            свяжитесь с менеджером:
+            &#43;7(911)484-46-13 <i><b>%s</b></i>
+            
+            
+            """;
 }
