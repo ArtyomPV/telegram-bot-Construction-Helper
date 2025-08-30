@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ArticleConstructionService {
+public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
