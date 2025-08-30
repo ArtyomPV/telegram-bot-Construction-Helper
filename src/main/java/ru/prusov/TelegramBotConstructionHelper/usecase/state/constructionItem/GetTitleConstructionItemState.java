@@ -3,7 +3,6 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.state.constructionItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -18,7 +17,7 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.state.State;
 import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.ASK_DESCRIPTION_CONSTRUCTION_ITEM;
-import static ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState.WAITING_TITLE_CONSTRUCTION_ITEM;
+import static ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState.WAITING_CONSTRUCTION_ITEM_TITLE;
 
 @Slf4j
 @Component
@@ -31,7 +30,7 @@ public class GetTitleConstructionItemState implements State {
 
     @Override
     public UserState state() {
-        return WAITING_TITLE_CONSTRUCTION_ITEM;
+        return WAITING_CONSTRUCTION_ITEM_TITLE;
     }
 
     @Override
@@ -40,7 +39,7 @@ public class GetTitleConstructionItemState implements State {
         constructionItem.setTitle(commonInfo.getMessageText());
         Long idConstructionItem = constructionItemService.save(constructionItem);
         keeperId.setId(idConstructionItem);
-        stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.WAITING_DESCRIPTION_CONSTRUCTION_ITEM);
+        stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.WAITING_CONSTRUCTION_ITEM_DESCRIPTION);
         DeleteMessage deleteMessage = AnswerMethodFactory.getDeleteMessage(commonInfo.getChatId(), commonInfo.getMessageId());
         EditMessageText sendMessage = AnswerMethodFactory.getEditMessageText(
                 commonInfo.getChatId(),

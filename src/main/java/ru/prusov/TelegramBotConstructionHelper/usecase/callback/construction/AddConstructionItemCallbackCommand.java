@@ -29,7 +29,7 @@ public class AddConstructionItemCallbackCommand implements CallbackCommand {
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.WAITING_TITLE_CONSTRUCTION_ITEM);
+        stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.WAITING_CONSTRUCTION_ITEM_TITLE);
         EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
                 commonInfo.getChatId(),
                 commonInfo.getMessageId(),

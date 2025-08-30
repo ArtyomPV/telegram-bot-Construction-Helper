@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -13,6 +11,8 @@ import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData;
+import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
+import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @RequiredArgsConstructor
 public class ConstructionCallbackCommand implements CallbackCommand {
     private final TelegramClient client;
+    private final StateService stateService;
 
     @Override
     public String command() {
@@ -33,7 +34,7 @@ public class ConstructionCallbackCommand implements CallbackCommand {
     @Override
     public void execute(CommonInfo commonInfo) {
         log.info("started command {}", command());
-
+        stateService.clearUserStateByChatId(commonInfo.getChatId());
         SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
                 commonInfo.getChatId(),
                 CONSTRUCTION_MESSAGE,
