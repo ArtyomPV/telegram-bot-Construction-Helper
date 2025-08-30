@@ -1,4 +1,4 @@
-package ru.prusov.TelegramBotConstructionHelper.usecase.callback.construction;
+package ru.prusov.TelegramBotConstructionHelper.usecase.callback.automation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +18,12 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import java.util.List;
 
-import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.ARTICLE_CONSTRUCTION;
-import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.CONSTRUCTION;
+import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.*;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ArticleConstructionCallbackCommand implements CallbackCommand {
-
+public class ArticleAutomaticsCallbackCommand implements CallbackCommand {
     private final String TITLE_CONTENT = "Оглавление статей: ";
     private final String NO_CONTENT = """
             Раздел не содержит статей!
@@ -34,23 +32,17 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
             """;
 
     private final TelegramClient client;
-    private final ArticleService articleConstructionService;
+    private final ArticleService articleService;
     private final StateService stateService;
 
     @Override
     public String command() {
-        return ARTICLE_CONSTRUCTION;
+        return ARTICLE_AUTOMATICS;
     }
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        /*
-        Получить список всех статей из БД
-        Предложить, пользователю выбрать статью по его id
-        Необходимо ввести id
-         */
-
-        List<Article> allByCategory = articleConstructionService.findAllByCategory(ArticleCategory.CONSTRUCTION);
+        List<Article> allByCategory = articleService.findAllByCategory(ArticleCategory.AUTOMATION);
         if (allByCategory == null || allByCategory.isEmpty()) {
             sendEmptyContent(commonInfo);
         } else {
@@ -63,29 +55,29 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
     private void sendArticleMessage(CommonInfo commonInfo, List<Article> allByCategory) {
         Long chatId = commonInfo.getChatId();
 
-        StringBuilder titlesAllArticleCategoryConstruction = new StringBuilder(TITLE_CONTENT);
+        StringBuilder titlesAllArticleCategoryAutomatics = new StringBuilder(TITLE_CONTENT);
 
         allByCategory.forEach(article -> {
-           titlesAllArticleCategoryConstruction.append("\n");
-           titlesAllArticleCategoryConstruction.append(article.getId());
-           titlesAllArticleCategoryConstruction.append(". ");
-           titlesAllArticleCategoryConstruction.append(article.getTitle());
-           titlesAllArticleCategoryConstruction.append("\n");
+            titlesAllArticleCategoryAutomatics.append("\n")
+                    .append(article.getId())
+                    .append(". ")
+                    .append(article.getTitle())
+                    .append("\n");
         });
-        titlesAllArticleCategoryConstruction.append("\n\n");
-        titlesAllArticleCategoryConstruction.append("Для просмотра статьи введите её номер.");
+        titlesAllArticleCategoryAutomatics.append("\n\n")
+                .append("Для просмотра статьи введите её номер.");
 
-        stateService.setUserStateByChatId(chatId, UserState.WAITING_CONSTRUCTION_ARTICLE_NUMBER);
-        log.info("Change user`s state to {}", UserState.WAITING_CONSTRUCTION_ARTICLE_NUMBER);
+        stateService.setUserStateByChatId(chatId, UserState.WAITING_AUTOMATION_ARTICLE_NUMBER);
+        log.info("Change user`s state to {}", UserState.WAITING_AUTOMATION_ARTICLE_NUMBER);
 
         SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
                 chatId,
-                titlesAllArticleCategoryConstruction.toString(),
+                titlesAllArticleCategoryAutomatics.toString(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Назад"),
                         List.of(1),
                         List.of(CONSTRUCTION)
-                        )
+                )
         );
 
         try {
@@ -106,7 +98,7 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
                         List.of(1),
                         List.of(CONSTRUCTION)
                 )
-                );
+        );
         try {
             client.execute(sendEmptyMessage);
         } catch (TelegramApiException e) {
@@ -115,7 +107,8 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
     }
 
     private static void sendLogError(TelegramApiException e) {
-        log.error("Don`t execute method: {}", e.getMessage());
+        log.error("Don`t execute method: {}, {}", ArticleAutomaticsCallbackCommand.class.getSimpleName(), e.getMessage());
     }
 
 }
+
