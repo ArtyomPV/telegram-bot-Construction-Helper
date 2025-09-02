@@ -1,9 +1,8 @@
-package ru.prusov.TelegramBotConstructionHelper.usecase.callback;
+package ru.prusov.TelegramBotConstructionHelper.usecase.callback.automation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -11,13 +10,12 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
 
 import java.util.List;
 
 import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.AUTOMATIZATION_MESSAGE;
-import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.CONSTRUCTION_MESSAGE;
-import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.AUTOMATIZATION;
-import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.START;
+import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.*;
 
 @Slf4j
 @Component
@@ -41,9 +39,9 @@ public class AutomatizationCallbackCommand implements CallbackCommand {
                 commonInfo  .getMessageId(),
                 AUTOMATIZATION_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
-                        List.of(1),
-                        List.of(START)
+                        List.of("Реализованные объекты", "Интересные статьи", "Связаться с нами","Назад"),
+                        List.of(1,1,1,1),
+                        List.of(REALIZED_AUTOMATICS, ARTICLE_AUTOMATICS, CONTACT_AUTOMATICS, START)
                 ));
         try {
             client.execute(deleteMessage);

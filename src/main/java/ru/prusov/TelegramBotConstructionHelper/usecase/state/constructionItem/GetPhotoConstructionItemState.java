@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -22,7 +20,7 @@ import java.util.List;
 
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.ADD_CONSTRUCTION_ITEM;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.START;
-import static ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState.WAITING_PHOTO_CONSTRUCTION_ITEM;
+import static ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState.WAITING_CONSTRUCTION_ITEM_PHOTO;
 
 @Slf4j
 @Component
@@ -35,7 +33,7 @@ public class GetPhotoConstructionItemState implements State {
 
     @Override
     public UserState state() {
-        return WAITING_PHOTO_CONSTRUCTION_ITEM;
+        return WAITING_CONSTRUCTION_ITEM_PHOTO;
     }
 
     @Override

@@ -43,9 +43,9 @@ public class MainSettingsCallbackCommand implements CallbackCommand {
                 commonInfo.getMessageId(),
                 MAIN_SETTINGS_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
-                        List.of("Сменить логотип", "Добавить завершенный объект", "Назад"),
-                        List.of(1, 1, 1),
-                        List.of(LOGO_CHANGE, ADD_CONSTRUCTION_ITEM, START)
+                        List.of("Сменить логотип", "Добавить завершенный объект", "Добавить статью", "Назад"),
+                        List.of(1, 1, 1, 1),
+                        List.of(LOGO_CHANGE, ADD_CONSTRUCTION_ITEM, ADD_ARTICLE, START)
                 )
         );
         try {
