@@ -18,6 +18,7 @@ public class CallbackData {
     public static final String CONTACT_CONSTRUCTION = "contact_construction";
     public static final String REALIZED_CONSTRUCTION = "realized_construction";
     public static final String ADD_CONSTRUCTION_ITEM = "add_construction_item";
+    public static final String ADD_ARTICLE = "add_article";
 
     public final static String AUTOMATIZATION = "automatization";
     public final static String REALIZED_AUTOMATICS = "realized_automatics";

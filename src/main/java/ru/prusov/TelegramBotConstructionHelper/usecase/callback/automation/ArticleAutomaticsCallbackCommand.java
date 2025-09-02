@@ -42,7 +42,7 @@ public class ArticleAutomaticsCallbackCommand implements CallbackCommand {
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        List<Article> allByCategory = articleService.findAllByCategory(ArticleCategory.AUTOMATION);
+        List<Article> allByCategory = articleService.findAllByCategory(ArticleCategory.AUTOMATION_CAT);
         if (allByCategory == null || allByCategory.isEmpty()) {
             sendEmptyContent(commonInfo);
         } else {

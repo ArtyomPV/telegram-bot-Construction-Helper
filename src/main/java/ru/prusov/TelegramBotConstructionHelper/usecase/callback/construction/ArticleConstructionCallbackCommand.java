@@ -50,7 +50,7 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
         Необходимо ввести id
          */
 
-        List<Article> allByCategory = articleConstructionService.findAllByCategory(ArticleCategory.CONSTRUCTION);
+        List<Article> allByCategory = articleConstructionService.findAllByCategory(ArticleCategory.CONSTRUCTION_CAT);
         if (allByCategory == null || allByCategory.isEmpty()) {
             sendEmptyContent(commonInfo);
         } else {
@@ -66,11 +66,11 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
         StringBuilder titlesAllArticleCategoryConstruction = new StringBuilder(TITLE_CONTENT);
 
         allByCategory.forEach(article -> {
-           titlesAllArticleCategoryConstruction.append("\n");
-           titlesAllArticleCategoryConstruction.append(article.getId());
-           titlesAllArticleCategoryConstruction.append(". ");
-           titlesAllArticleCategoryConstruction.append(article.getTitle());
-           titlesAllArticleCategoryConstruction.append("\n");
+            titlesAllArticleCategoryConstruction.append("\n");
+            titlesAllArticleCategoryConstruction.append(article.getId());
+            titlesAllArticleCategoryConstruction.append(". ");
+            titlesAllArticleCategoryConstruction.append(article.getTitle());
+            titlesAllArticleCategoryConstruction.append("\n");
         });
         titlesAllArticleCategoryConstruction.append("\n\n");
         titlesAllArticleCategoryConstruction.append("Для просмотра статьи введите её номер.");
@@ -85,7 +85,7 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
                         List.of("Назад"),
                         List.of(1),
                         List.of(CONSTRUCTION)
-                        )
+                )
         );
 
         try {
@@ -106,7 +106,7 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
                         List.of(1),
                         List.of(CONSTRUCTION)
                 )
-                );
+        );
         try {
             client.execute(sendEmptyMessage);
         } catch (TelegramApiException e) {
