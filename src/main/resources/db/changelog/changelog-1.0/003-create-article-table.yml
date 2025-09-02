@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-article-table
+      author: Prusov # Укажите ваше имя/имя разработчика
+      changes:
+        - createTable:
+            tableName: article # Соответствует @Table(name = "project")
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title # Соответствует полю title
+                  type: VARCHAR(255) # Типичный размер для заголовка
+                  # nullable: true, так как не указано constraints(nullable=false)
+              - column:
+                  name: description # Соответствует полю description
+                  type: TEXT
+                  # nullable: true
+              - column:
+                  name: category
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false

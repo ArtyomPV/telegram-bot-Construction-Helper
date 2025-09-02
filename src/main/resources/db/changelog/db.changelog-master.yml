@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/changelog-1.0/001-create-photos-table.yml
   - include:
       file: db/changelog/changelog-1.0/002-create-construction-item-table.yml
+  - include:
+      file: db/changelog/changelog-1.0/003-create-article-table.yml
