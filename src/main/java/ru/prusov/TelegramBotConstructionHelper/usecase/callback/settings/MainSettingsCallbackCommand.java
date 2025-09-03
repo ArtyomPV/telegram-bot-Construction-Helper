@@ -3,8 +3,8 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.settings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
@@ -12,7 +12,6 @@ import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
-import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import java.util.List;
 
@@ -35,12 +34,14 @@ public class MainSettingsCallbackCommand implements CallbackCommand {
     public void execute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         stateService.clearUserStateByChatId(chatId);
-        DeleteMessage deleteMessage = AnswerMethodFactory.getDeleteMessage(
+        DeleteMessage deleteMessage1 = AnswerMethodFactory.getDeleteMessage(
                 commonInfo.getChatId(),
                 commonInfo.getMessageId() - 1);
-        EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
+        DeleteMessage deleteMessage2 = AnswerMethodFactory.getDeleteMessage(
+                commonInfo.getChatId(),
+                commonInfo.getMessageId());
+        SendMessage sendMessageText = AnswerMethodFactory.getSendMessage(
                 chatId,
-                commonInfo.getMessageId(),
                 MAIN_SETTINGS_MESSAGE,
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Сменить логотип", "Добавить завершенный объект", "Добавить статью", "Назад"),
@@ -49,8 +50,9 @@ public class MainSettingsCallbackCommand implements CallbackCommand {
                 )
         );
         try {
-            client.execute(deleteMessage);
-            client.execute(editMessageText);
+            client.execute(deleteMessage1);
+            client.execute(deleteMessage2);
+            client.execute(sendMessageText);
         } catch (TelegramApiException e) {
             log.error("Не выполнен метод {}", MainSettingsCallbackCommand.class.getSimpleName());
             throw new RuntimeException(e);
