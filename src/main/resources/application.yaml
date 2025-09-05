@@ -29,3 +29,9 @@ server:
 
 admin:
   chatId: 5151658826
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
