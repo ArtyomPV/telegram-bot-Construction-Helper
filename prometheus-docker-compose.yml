@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_tcha
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - mynet
+
+
+volumes:
+  prometheus-data:
+networks:
+  mynet:
+    external: true
