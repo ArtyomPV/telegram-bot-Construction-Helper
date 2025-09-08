@@ -6,5 +6,5 @@ spring:
     driver-class-name: org.postgresql.Driver
 
 bot:
-  botUsername: java test bot
-  botToken: 7350864573:AAFRpqr2MsIPmeuJiPT6BXb06fE317McryA
+  botUsername: Norman
+  botToken: 7278897959:AAGbd9Hb69O8TNPs9zKt5LfSS7EDOG4ek8U

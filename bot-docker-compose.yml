@@ -46,7 +46,7 @@ volumes:
 networks:
   mynet:
     external: true
-# docker network mynet
+# docker network create mynet
 
 
 
