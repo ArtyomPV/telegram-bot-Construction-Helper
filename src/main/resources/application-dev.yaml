@@ -1,10 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5445/construction_db
-    username: arty
-    password: arty
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
 bot:
-  botUsername: java test bot
-  botToken: 7350864573:AAFRpqr2MsIPmeuJiPT6BXb06fE317McryA
+  botUsername: ${BOT_USERNAME}
+  botToken: ${BOT_TOKEN}

@@ -1,26 +1,10 @@
 version: '3.9'
 services:
-  db:
-    image: postgres:16
-    container_name: db
-    restart: always
-    environment:
-      POSTGRES_DB: tbcha_db
-      POSTGRES_USER: arty
-      POSTGRES_PASSWORD: arty
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U arty -d tbcha_db" ]
-      interval: 5s
-      timeout: 5s
-      retries: 1
-
-  app:
+  app-tbcha:
     build: .
-    container_name: todo_tb
+    container_name: tbcha-bot
+    ports:
+      - "8080:8080"
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
@@ -29,14 +13,92 @@ services:
       POSTGRES_PASSWORD: arty
       BOT_USERNAME: java test bot
       BOT_TOKEN: 7350864573:AAFRpqr2MsIPmeuJiPT6BXb06fE317McryA
-#      BOT_USERNAME: Norman
-#      BOT_TOKEN: 7278897959:AAGbd9Hb69O8TNPs9zKt5LfSS7EDOG4ek8U
-    ports:
-      - "8080:8080"
     depends_on:
-      db:
-        condition: service_healthy
-    restart: on-failure
+      - db
+    restart: always
+    networks:
+      - mynet
+
+  db:
+    image: postgres:latest
+    container_name: tbcha-db
+    restart: always
+    environment:
+      POSTGRES_DB: tbcha_db
+      POSTGRES_USER: arty
+      POSTGRES_PASSWORD: arty
+    ports:
+      - "5432:5432"
+    volumes:
+      - tbcha-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg-isready -U arty tbcha_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+        - mynet
+
 
 volumes:
-  pgdata:
+  tbcha-data:
+
+networks:
+  mynet:
+    external: true
+# docker network create mynet
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: '3.9'
+#services:
+#  db:
+#    image: postgres:16
+#    container_name: db
+#    restart: always
+#    environment:
+#      POSTGRES_DB: tbcha_db
+#      POSTGRES_USER: arty
+#      POSTGRES_PASSWORD: arty
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U arty -d tbcha_db" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 1
+#
+#  app:
+#    build: .
+#    container_name: todo_tb
+#    environment:
+#      POSTGRES_HOST: db
+#      POSTGRES_PORT: 5432
+#      POSTGRES_DB: tbcha_db
+#      POSTGRES_USER: arty
+#      POSTGRES_PASSWORD: arty
+#      BOT_USERNAME: java test bot
+#      BOT_TOKEN: 7350864573:AAFRpqr2MsIPmeuJiPT6BXb06fE317McryA
+##      BOT_USERNAME: Norman
+##      BOT_TOKEN: 7278897959:AAGbd9Hb69O8TNPs9zKt5LfSS7EDOG4ek8U
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    restart: on-failure
+#
+#volumes:
+#  pgdata:
