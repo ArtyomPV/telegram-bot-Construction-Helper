@@ -36,7 +36,7 @@ public class GetDescriptionConstructionItemState implements State {
     @Override
     public void handleState(CommonInfo commonInfo) {
         Long constructionItemId = keeperId.getId();
-        ConstructionItem constructionItem = constructionItemService.getConstructionItemById(constructionItemId);
+        ConstructionItem constructionItem = constructionItemService.getConstructionItemById(constructionItemId).get();
         constructionItem.setDescription(commonInfo.getMessageText());
         constructionItemService.save(constructionItem);
         stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.WAITING_CONSTRUCTION_ITEM_PHOTO);

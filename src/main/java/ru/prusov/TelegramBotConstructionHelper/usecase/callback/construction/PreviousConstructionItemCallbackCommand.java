@@ -36,7 +36,7 @@ public class PreviousConstructionItemCallbackCommand implements CallbackCommand 
     public void execute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         Long idCurrentConstructionItem = constructionItemDtoService.getConstructionItemDto().getId();
-        ConstructionItem currentConstructionItem = constructionItemService.getConstructionItemById(idCurrentConstructionItem);
+        ConstructionItem currentConstructionItem = constructionItemService.getConstructionItemById(idCurrentConstructionItem).get();
 
         constructionItemService.getPrev(currentConstructionItem).ifPresentOrElse(
                 prevConstructionItem -> {

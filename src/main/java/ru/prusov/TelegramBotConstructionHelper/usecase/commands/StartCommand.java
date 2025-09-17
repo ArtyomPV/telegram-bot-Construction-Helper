@@ -16,7 +16,9 @@ import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Photo;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.User;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.PhotoService;
+import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.UserService;
+import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,7 @@ public class StartCommand implements Command {
     private final TelegramClient client;
     private final UserService userService;
     private final PhotoService photoService;
+    private final StateService stateService;
 
     @Override
     public UserCommand command() {
@@ -43,6 +46,7 @@ public class StartCommand implements Command {
     public void execute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         User user = userService.findOrCreateUser(chatId, commonInfo.getUserFromTelegram().getFirstName());
+        stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.NONE);
         ReplyKeyboard inlineKeyboard = null;
         if (user.getRole().equals(ADMIN)) {
             log.info(user.getRole().toString());
