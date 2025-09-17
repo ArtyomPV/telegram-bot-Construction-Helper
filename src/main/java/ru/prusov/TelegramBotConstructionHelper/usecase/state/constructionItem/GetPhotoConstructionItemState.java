@@ -40,7 +40,7 @@ public class GetPhotoConstructionItemState implements State {
     public void handleState(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         Long constructionItemId = keeperId.getId();
-        ConstructionItem constructionItem = constructionItemService.getConstructionItemById(constructionItemId);
+        ConstructionItem constructionItem = constructionItemService.getConstructionItemById(constructionItemId).get();
         constructionItem.setPhotoFileId(commonInfo.getFileId());
         constructionItemService.save(constructionItem);
         stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.NONE);
