@@ -1,4 +1,4 @@
-package ru.prusov.TelegramBotConstructionHelper.usecase.services;
+package ru.prusov.TelegramBotConstructionHelper.usecase.services.article;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,29 +7,27 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.dto.ArticleDto;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Article;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory;
-import ru.prusov.TelegramBotConstructionHelper.model.repository.ArticleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-@Slf4j
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ArticleService {
+    private final ArticleCacheService articleCacheService;
 
-    private final ArticleRepository articleRepository;
-
-    public List<Article> findAll() {
-        return articleRepository.findAll();
-    }
 
     public List<Article> findAllByCategory(ArticleCategory category) {
-        return articleRepository.findAllByCategory(category);
+        return articleCacheService.getAllConstructionArticle().stream()
+                .filter(article -> article.getCategory().equals(category))
+                .toList();
     }
 
     @Transactional
     public void save(ArticleDto articleDto) {
         try {
-            articleRepository.save(Article.builder()
+            articleCacheService.save(Article.builder()
                             .title(articleDto.getTitle())
                             .description(articleDto.getDescription())
                             .category(articleDto.getCategory())
@@ -38,5 +36,13 @@ public class ArticleService {
         } catch (Exception e) {
             log.error("Article is not saved");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Article> getArticleByIndex(long index, ArticleCategory category){
+        List<Article> articles = findAllByCategory(category);
+        return articles.stream()
+                .filter(article -> article.getId()==index)
+                .findFirst();
     }
 }

@@ -10,9 +10,8 @@ import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Article;
-import ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory;
 import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
-import ru.prusov.TelegramBotConstructionHelper.usecase.services.ArticleService;
+import ru.prusov.TelegramBotConstructionHelper.usecase.services.article.ArticleConstructionService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
@@ -32,7 +31,7 @@ public class ArticleAutomaticsCallbackCommand implements CallbackCommand {
             """;
 
     private final TelegramClient client;
-    private final ArticleService articleService;
+    private final ArticleConstructionService articleService;
     private final StateService stateService;
 
     @Override
@@ -42,7 +41,7 @@ public class ArticleAutomaticsCallbackCommand implements CallbackCommand {
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        List<Article> allByCategory = articleService.findAllByCategory(ArticleCategory.AUTOMATION_CAT);
+        List<Article> allByCategory = articleService.findAllByCategory();
         if (allByCategory == null || allByCategory.isEmpty()) {
             sendEmptyContent(commonInfo);
         } else {
