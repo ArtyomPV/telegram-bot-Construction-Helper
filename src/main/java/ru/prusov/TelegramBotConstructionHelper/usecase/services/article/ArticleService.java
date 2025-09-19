@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.dto.ArticleDto;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Article;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory;
-import ru.prusov.TelegramBotConstructionHelper.model.repository.ArticleRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class ArticleService {
-    private final ArticleRepository articleRepository;
     private final ArticleCacheService articleCacheService;
 
 

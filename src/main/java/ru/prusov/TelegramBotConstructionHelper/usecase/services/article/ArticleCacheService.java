@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Article;
-import ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory;
 import ru.prusov.TelegramBotConstructionHelper.model.repository.ArticleRepository;
 
 import java.util.Comparator;
