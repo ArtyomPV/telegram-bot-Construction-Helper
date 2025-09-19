@@ -10,14 +10,14 @@ import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Article;
-import ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory;
 import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
-import ru.prusov.TelegramBotConstructionHelper.usecase.services.ArticleService;
+import ru.prusov.TelegramBotConstructionHelper.usecase.services.article.ArticleService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 
 import java.util.List;
 
+import static ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory.CONSTRUCTION_CAT;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.ARTICLE_CONSTRUCTION;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.CONSTRUCTION;
 
@@ -34,7 +34,7 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
             """;
 
     private final TelegramClient client;
-    private final ArticleService articleConstructionService;
+    private final ArticleService articleService;
     private final StateService stateService;
 
     @Override
@@ -50,7 +50,7 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
         Необходимо ввести id
          */
 
-        List<Article> allByCategory = articleConstructionService.findAllByCategory(ArticleCategory.CONSTRUCTION_CAT);
+        List<Article> allByCategory = articleService.findAllByCategory(CONSTRUCTION_CAT);
         if (allByCategory == null || allByCategory.isEmpty()) {
             sendEmptyContent(commonInfo);
         } else {

@@ -11,7 +11,7 @@ import ru.prusov.TelegramBotConstructionHelper.dto.ArticleDto;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
-import ru.prusov.TelegramBotConstructionHelper.usecase.services.ArticleService;
+import ru.prusov.TelegramBotConstructionHelper.usecase.services.article.ArticleService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.state.State;
 import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
