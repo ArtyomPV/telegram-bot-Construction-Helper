@@ -39,20 +39,22 @@ public class StartCommand extends AbstractCommand {
         User user = userService.findOrCreateUser(chatId, commonInfo.getUserFromTelegram().getUserName());
         stateService.setUserStateByChatId(chatId, UserState.NONE);
 
+        deleteAllMessage(chatId);
+
         InlineKeyboardMarkup inlineKeyboard = buildInlineKeyboardWithRoleOfUser(user.getRole());
 
         Optional<Photo> logo = photoService.getPhotoByPhotoName("logo");
 
-       if(logo.isPresent()){
-           Photo photo = logo.get();
-           sendPhoto(chatId, photo.getPhotoId());
-       }
+        if (logo.isPresent()) {
+            Photo photo = logo.get();
+            sendPhotoAndTrack(chatId, photo.getPhotoId(), commonInfo.getMessageId() + 1);
+        }
 
 
-        reply(chatId,
+        replyAndTrack(chatId,
                 TextConstants.START_MESSAGE,
-                inlineKeyboard);
-
+                inlineKeyboard,
+                commonInfo.getMessageId() + 1);
     }
 
     private InlineKeyboardMarkup buildInlineKeyboardWithRoleOfUser(Role role) {
