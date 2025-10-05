@@ -20,14 +20,14 @@ public class ArticleConstructionService {
     private final ArticleRepository articleRepository;
 
 
-    public List<Article> findAllByCategory() {
+    public List<Article> findAllByCategory(ArticleCategory category) {
         return articleCacheService.getAllConstructionArticle().stream()
-                .filter(article -> article.getCategory().equals(ArticleCategory.CONSTRUCTION_CAT))
+                .filter(article -> article.getCategory().equals(category))
                 .toList();
     }
 
-    public Optional<Article> getArticleByIndex(long index){
-        List<Article> articles = findAllByCategory();
+    public Optional<Article> getArticleByIndex(long index, ArticleCategory category){
+        List<Article> articles = findAllByCategory(category);
         return articles.stream()
                 .filter(article -> article.getId()==index)
                 .findFirst();

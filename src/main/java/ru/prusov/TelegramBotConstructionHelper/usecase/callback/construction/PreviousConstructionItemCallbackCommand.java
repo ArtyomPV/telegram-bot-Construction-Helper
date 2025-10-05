@@ -2,16 +2,12 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.construction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ConstructionItem;
-import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.AbstractCallbackCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.ConstructionItemDtoService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.ConstructionItemService;
 
@@ -22,8 +18,8 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PreviousConstructionItemCallbackCommand implements CallbackCommand {
-    private final TelegramClient client;
+public class PreviousConstructionItemCallbackCommand extends AbstractCallbackCommand {
+
     private final ConstructionItemService constructionItemService;
     private final ConstructionItemDtoService constructionItemDtoService;
 
@@ -33,7 +29,7 @@ public class PreviousConstructionItemCallbackCommand implements CallbackCommand 
     }
 
     @Override
-    public void execute(CommonInfo commonInfo) {
+    protected void doExecute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         Long idCurrentConstructionItem = constructionItemDtoService.getConstructionItemDto().getId();
         ConstructionItem currentConstructionItem = constructionItemService.getConstructionItemById(idCurrentConstructionItem).get();
@@ -52,35 +48,24 @@ public class PreviousConstructionItemCallbackCommand implements CallbackCommand 
         );
     }
 
+    @Override
+    protected Logger log() {
+        return log;
+    }
+
     private void showPrevConstructionItem(ConstructionItem prevConstructionItem,
                                           Long chatId,
                                           CommonInfo commonInfo) {
 
         constructionItemDtoService.saveConstructionItemDto(prevConstructionItem);
-
-        EditMessageText titleText = AnswerMethodFactory.getEditMessageText(chatId,
-                commonInfo.getMessageId() - 2,
-                prevConstructionItem.getTitle());
-
-        EditMessageMedia sendPhoto = AnswerMethodFactory.getEditMessageMedia(chatId,
-                commonInfo.getMessageId() - 1,
-                prevConstructionItem.getPhotoFileId());
-
-        EditMessageText descriptionText = AnswerMethodFactory.getEditMessageText(chatId,
-                commonInfo.getMessageId(),
+        editReply(chatId, prevConstructionItem.getTitle(), commonInfo.getMessageId() - 2);
+        editSendPhoto(chatId, prevConstructionItem.getPhotoFileId(), commonInfo.getMessageId() - 1);
+        editReply(chatId,
                 prevConstructionItem.getDescription(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Предыдущий", "Следующий", "Назад"),
                         List.of(2, 1),
-                        List.of(PREV_CONSTRUCTION, NEXT_CONSTRUCTION, CONSTRUCTION)
-                ));
-
-        try {
-            client.execute(titleText);
-            client.execute(sendPhoto);
-            client.execute(descriptionText);
-        } catch (TelegramApiException e) {
-            log.error("Request failed: object name - class {}", NextConstructionItemCallbackCommand.class.getSimpleName());
-        }
+                        List.of(PREV_CONSTRUCTION, NEXT_CONSTRUCTION, CONSTRUCTION)),
+                commonInfo.getMessageId());
     }
 }

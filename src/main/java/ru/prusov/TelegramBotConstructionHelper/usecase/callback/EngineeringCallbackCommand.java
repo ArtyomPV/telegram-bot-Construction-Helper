@@ -2,54 +2,46 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 
 import java.util.List;
 
-import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.CONSTRUCTION_MESSAGE;
-import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.ENGINEERING_MESSAGE;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.ENGINEERING;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.START;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EngineeringCallbackCommand implements CallbackCommand {
-    private final TelegramClient client;
+public class EngineeringCallbackCommand extends AbstractCallbackCommand {
+
+    private final String CONTENT = "Данный раздел находится в разработке";
+    private final String BACK_CONTENT = "⬅\uFE0F Назад";
+
+    @Override
+    protected void doExecute(CommonInfo commonInfo) {
+        Long chatId = commonInfo.getChatId();
+        deleteAllMessage(chatId);
+
+        replyAndTrack(chatId,
+                CONTENT,
+                KeyboardFactory.getInlineKeyboard(
+                        List.of(BACK_CONTENT),
+                        List.of(1),
+                        List.of(START)),
+                commonInfo.getMessageId() + 1
+        );
+    }
+
+    @Override
+    protected Logger log() {
+        return log;
+    }
 
     @Override
     public String command() {
         return ENGINEERING;
-    }
-
-    @Override
-    public void execute(CommonInfo commonInfo) {
-        log.info("started command {}", command());
-        DeleteMessage deleteMessage = AnswerMethodFactory.getDeleteMessage(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId() - 1);
-        EditMessageText sendMessage = AnswerMethodFactory.getEditMessageText(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId(),
-                ENGINEERING_MESSAGE,
-                KeyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
-                        List.of(1),
-                        List.of(START)
-                ));
-        try {
-            client.execute(deleteMessage);
-            client.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

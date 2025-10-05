@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.botapimethods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiValidationException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.common.exceprtions.TelegramClientRuntimeException;
 
@@ -37,6 +36,15 @@ public class TelegramSender {
         } catch (TelegramApiException e) {
             log.error("Telegram Api error on {}: {}", sendPhoto.getMethod(), e.getMessage(), e);
             throw new TelegramClientRuntimeException("Telegram call failed: " + sendPhoto.getMethod(), e);
+        }
+    }
+
+    public Serializable execute(EditMessageMedia editMessageMedia){
+        try {
+            return client.execute(editMessageMedia);
+        } catch (TelegramApiException e) {
+            log.error("Telegram Api error on {}: {}", editMessageMedia.getMethod(), e.getMessage(), e);
+            throw new TelegramClientRuntimeException("Telegram call failed: " + editMessageMedia.getMethod(), e);
         }
     }
 }
