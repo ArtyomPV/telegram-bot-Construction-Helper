@@ -42,11 +42,14 @@ public class TelegramBotService implements LongPollingSingleThreadUpdateConsumer
     private final StateService stateService;
     private final StateRouter stateRouter;
     private final PhotoService photoService;
+    private final MessageIDKeeperService messageIDKeeperService;
 
     @Override
     public void consume(Update update) {
         if (update.hasMessage()) {
             Message lastUserMessage = update.getMessage();
+            messageIDKeeperService.addMessageId(lastUserMessage.getChatId(), lastUserMessage.getMessageId());
+
             if (lastUserMessage.hasText()) {
                 String lastUserMessageText = lastUserMessage.getText();
                 CommonInfo commonInfo = getCommonInfo(lastUserMessage);
