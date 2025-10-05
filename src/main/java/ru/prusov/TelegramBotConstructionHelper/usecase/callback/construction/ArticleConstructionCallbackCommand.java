@@ -2,15 +2,12 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.construction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Article;
-import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.AbstractCallbackCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.article.ArticleService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
@@ -24,7 +21,7 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ArticleConstructionCallbackCommand implements CallbackCommand {
+public class ArticleConstructionCallbackCommand extends AbstractCallbackCommand {
 
     private final String TITLE_CONTENT = "Оглавление статей: ";
     private final String NO_CONTENT = """
@@ -33,7 +30,6 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
             Зайдите позже...
             """;
 
-    private final TelegramClient client;
     private final ArticleService articleService;
     private final StateService stateService;
 
@@ -43,8 +39,9 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
     }
 
     @Override
-    public void execute(CommonInfo commonInfo) {
-        /*
+    protected void doExecute(CommonInfo commonInfo) {
+        deleteAllMessage(commonInfo.getChatId());
+         /*
         Получить список всех статей из БД
         Предложить, пользователю выбрать статью по его id
         Необходимо ввести id
@@ -56,7 +53,11 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
         } else {
             sendArticleMessage(commonInfo, allByCategory);
         }
+    }
 
+    @Override
+    protected Logger log() {
+        return log;
     }
 
 
@@ -78,44 +79,24 @@ public class ArticleConstructionCallbackCommand implements CallbackCommand {
         stateService.setUserStateByChatId(chatId, UserState.WAITING_CONSTRUCTION_ARTICLE_NUMBER);
         log.info("Change user`s state to {}", UserState.WAITING_CONSTRUCTION_ARTICLE_NUMBER);
 
-        SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
-                chatId,
+        replyAndTrack(chatId,
                 titlesAllArticleCategoryConstruction.toString(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Назад"),
                         List.of(1),
-                        List.of(CONSTRUCTION)
-                )
-        );
-
-        try {
-            client.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            sendLogError(e);
-            throw new RuntimeException(e);
-        }
-
+                        List.of(CONSTRUCTION)),
+                commonInfo.getMessageId() + 1);
     }
 
     private void sendEmptyContent(CommonInfo commonInfo) {
-        SendMessage sendEmptyMessage = AnswerMethodFactory.getSendMessage(
-                commonInfo.getChatId(),
+        replyAndTrack(commonInfo.getChatId(),
                 NO_CONTENT,
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Назад"),
                         List.of(1),
-                        List.of(CONSTRUCTION)
-                )
-        );
-        try {
-            client.execute(sendEmptyMessage);
-        } catch (TelegramApiException e) {
-            sendLogError(e);
-        }
-    }
-
-    private static void sendLogError(TelegramApiException e) {
-        log.error("Don`t execute method: {}", e.getMessage());
+                        List.of(CONSTRUCTION)),
+                commonInfo.getMessageId() + 1
+                );
     }
 
 }

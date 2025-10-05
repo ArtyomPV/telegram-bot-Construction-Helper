@@ -2,17 +2,12 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.construction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ConstructionItem;
-import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.AbstractCallbackCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.ConstructionItemDtoService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.ConstructionItemService;
 
@@ -24,8 +19,8 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RealizedConstructionCallbackCommand implements CallbackCommand {
-    private final TelegramClient client;
+public class RealizedConstructionCallbackCommand extends AbstractCallbackCommand {
+
     private final ConstructionItemService constructionItemService;
     private final ConstructionItemDtoService constructionItemDtoService;
 
@@ -34,9 +29,10 @@ public class RealizedConstructionCallbackCommand implements CallbackCommand {
         return REALIZED_CONSTRUCTION;
     }
 
+
     @Override
-    public void execute(CommonInfo commonInfo) {
-        log.info("started method {}", RealizedConstructionCallbackCommand.class.getSimpleName());
+    protected void doExecute(CommonInfo commonInfo) {
+        deleteAllMessage(commonInfo.getChatId());
         constructionItemService.getFirst().ifPresentOrElse(
                 constructionItem -> {
                     constructionItemDtoService.saveConstructionItemDto(constructionItem);
@@ -45,50 +41,37 @@ public class RealizedConstructionCallbackCommand implements CallbackCommand {
                     sendEmptyContent(commonInfo);
                 }
         );
+    }
 
-
+    @Override
+    protected Logger log() {
+        return log;
     }
 
     private void sendEmptyContent(CommonInfo commonInfo) {
-        EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId(),
-                NO_CONSTRUCTION_ITEM,
-                KeyboardFactory.getInlineKeyboard(
+
+        replyAndTrack(commonInfo.getChatId(), NO_CONSTRUCTION_ITEM, KeyboardFactory.getInlineKeyboard(
                         List.of("Назад"),
                         List.of(1),
-                        List.of(CONSTRUCTION)
-                )
-        );
-        try {
-            client.execute(editMessageText);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+                        List.of(CONSTRUCTION)),
+                commonInfo.getMessageId() + 1);
     }
 
     private void sendContent(CommonInfo commonInfo, ConstructionItem constructionItem) {
-        EditMessageText titleText = AnswerMethodFactory.getEditMessageText(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId(),
-                constructionItem.getTitle());
-        SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(
-                commonInfo.getChatId(),
-                constructionItem.getPhotoFileId());
-        SendMessage descriptionText = AnswerMethodFactory.getSendMessage(
-                commonInfo.getChatId(),
+        Long chatId = commonInfo.getChatId();
+        replyAndTrack(chatId,
+                constructionItem.getTitle(),
+                commonInfo.getMessageId() + 1);
+        sendPhotoAndTrack(chatId,
+                constructionItem.getPhotoFileId(),
+                commonInfo.getMessageId() + 2);
+        replyAndTrack(
+                chatId,
                 constructionItem.getDescription(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Предыдущий", "Следующий", "Назад"),
                         List.of(2, 1),
-                        List.of(PREV_CONSTRUCTION, NEXT_CONSTRUCTION, CONSTRUCTION)
-                ));
-        try {
-            client.execute(titleText);
-            client.execute(sendPhoto);
-            client.execute(descriptionText);
-        } catch (TelegramApiException e) {
-            log.error("Request failed: object name - class {}", RealizedConstructionCallbackCommand.class.getSimpleName());
-        }
+                        List.of(PREV_CONSTRUCTION, NEXT_CONSTRUCTION, CONSTRUCTION)),
+                commonInfo.getMessageId() + 3);
     }
 }

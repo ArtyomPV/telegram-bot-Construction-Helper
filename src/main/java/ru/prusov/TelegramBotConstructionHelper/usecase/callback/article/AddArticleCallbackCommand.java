@@ -2,15 +2,13 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.article;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.ArticleCategory;
-import ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackCommand;
+import ru.prusov.TelegramBotConstructionHelper.usecase.callback.AbstractCallbackCommand;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 
 
@@ -23,7 +21,7 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AddArticleCallbackCommand implements CallbackCommand {
+public class AddArticleCallbackCommand extends AbstractCallbackCommand {
 
     private final TelegramClient client;
     private final StateService stateService;
@@ -34,7 +32,9 @@ public class AddArticleCallbackCommand implements CallbackCommand {
     }
 
     @Override
-    public void execute(CommonInfo commonInfo) {
+    protected void doExecute(CommonInfo commonInfo) {
+        deleteAllMessage(commonInfo.getChatId());
+
         StringBuilder textMessage = new StringBuilder("Введите категорию статьи: \n");
         ArticleCategory[] values = ArticleCategory.values();
         int index = 1;
@@ -48,24 +48,18 @@ public class AddArticleCallbackCommand implements CallbackCommand {
 
         List<String> buttonData = Arrays.stream(ArticleCategory.values()).map(ArticleCategory::getName)
                 .toList();
-        buttonData.forEach(System.out::println);
 
-
-        EditMessageText editMessageText = AnswerMethodFactory.getEditMessageText(
-                commonInfo.getChatId(),
-                commonInfo.getMessageId(),
+        replyAndTrack(commonInfo.getChatId(),
                 textMessage.toString(),
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Строительство", "Инженерные сети", "Автоматика"),
                         List.of(1, 1, 1),
                         buttonData
-                )
-        );
-        try {
-            client.execute(editMessageText);
-        } catch (TelegramApiException e) {
-            log.error("Request failed: object name - class {}",
-                    AddArticleCallbackCommand.class.getSimpleName());
-        }
+                ), commonInfo.getMessageId() + 1);
+    }
+
+    @Override
+    protected Logger log() {
+        return log;
     }
 }

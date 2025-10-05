@@ -2,19 +2,15 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.commands;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.prusov.TelegramBotConstructionHelper.constants.TextConstants;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
-import ru.prusov.TelegramBotConstructionHelper.factory.AnswerMethodFactory;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.Photo;
 import ru.prusov.TelegramBotConstructionHelper.model.entity.User;
+import ru.prusov.TelegramBotConstructionHelper.usecase.role.Role;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.PhotoService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.StateService;
 import ru.prusov.TelegramBotConstructionHelper.usecase.services.UserService;
@@ -23,68 +19,67 @@ import ru.prusov.TelegramBotConstructionHelper.usecase.state.UserState;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.LOGO_IMAGE_PATH;
-import static ru.prusov.TelegramBotConstructionHelper.constants.TextConstants.RESOURCE_PATH;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.*;
+import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackData.SETTINGS;
 import static ru.prusov.TelegramBotConstructionHelper.usecase.role.Role.ADMIN;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StartCommand implements Command {
-    private final TelegramClient client;
+public class StartCommand extends AbstractCommand {
+
     private final UserService userService;
-    private final PhotoService photoService;
     private final StateService stateService;
+    private final PhotoService photoService;
+
 
     @Override
-    public UserCommand command() {
-        return UserCommand.START;
+    protected void doExecute(CommonInfo commonInfo) {
+        Long chatId = commonInfo.getChatId();
+        User user = userService.findOrCreateUser(chatId, commonInfo.getUserFromTelegram().getUserName());
+        stateService.setUserStateByChatId(chatId, UserState.NONE);
+
+        deleteAllMessage(chatId);
+
+        InlineKeyboardMarkup inlineKeyboard = buildInlineKeyboardWithRoleOfUser(user.getRole());
+
+        Optional<Photo> logo = photoService.getPhotoByPhotoName("logo");
+
+        if (logo.isPresent()) {
+            Photo photo = logo.get();
+            sendPhotoAndTrack(chatId, photo.getPhotoId(), commonInfo.getMessageId() + 1);
+        }
+
+
+        replyAndTrack(chatId,
+                TextConstants.START_MESSAGE,
+                inlineKeyboard,
+                commonInfo.getMessageId() + 1);
     }
 
-    @Override
-    public void execute(CommonInfo commonInfo) {
-        Long chatId = commonInfo.getChatId();
-        User user = userService.findOrCreateUser(chatId, commonInfo.getUserFromTelegram().getFirstName());
-        stateService.setUserStateByChatId(commonInfo.getChatId(), UserState.NONE);
-        ReplyKeyboard inlineKeyboard = null;
-        if (user.getRole().equals(ADMIN)) {
-            log.info(user.getRole().toString());
-            inlineKeyboard = KeyboardFactory.getInlineKeyboard(
+    private InlineKeyboardMarkup buildInlineKeyboardWithRoleOfUser(Role role) {
+        if (ADMIN.equals(role)) {
+            return KeyboardFactory.getInlineKeyboard(
                     List.of("Строительство", "Инженерные сети", "Автоматика и система управления", "Настройки"),
                     List.of(1, 1, 1, 1),
                     List.of(CONSTRUCTION, ENGINEERING, AUTOMATIZATION, SETTINGS)
             );
-        } else {
-            inlineKeyboard = KeyboardFactory.getInlineKeyboard(
-                    List.of("Строительство", "Инженерные сети", "Автоматика и система управления"),
-                    List.of(1, 1, 1),
-                    List.of(CONSTRUCTION, ENGINEERING, AUTOMATIZATION));
         }
-
-        SendMessage sendMessage = AnswerMethodFactory.getSendMessage(
-                chatId,
-                TextConstants.START_MESSAGE,
-                inlineKeyboard
+        return KeyboardFactory.getInlineKeyboard(
+                List.of("Строительство", "Инженерные сети", "Автоматика и система управления"),
+                List.of(1, 1, 1),
+                List.of(CONSTRUCTION, ENGINEERING, AUTOMATIZATION)
         );
-        Optional<Photo> logo = photoService.getPhotoByPhotoName("logo");
-        if (logo.isPresent()) {
-            Photo photo = logo.get();
-            SendPhoto sendPhoto = AnswerMethodFactory.getSendPhoto(chatId, photo.getPhotoId());
-            try {
-                client.execute(sendPhoto);
-                client.execute(sendMessage);
-            } catch (TelegramApiException e) {
-                log.error("Don`t execute method: {}", e.getMessage());
-            }
-        } else {
-            try {
-                client.execute(sendMessage);
-            } catch (TelegramApiException e) {
-                log.error("photo is not found");
-                log.error(e.getMessage());
-            }
-        }
+    }
 
+
+    @Override
+    protected Logger log() {
+        return log;
+    }
+
+    @Override
+    public UserCommand command() {
+        return UserCommand.START;
     }
 }
