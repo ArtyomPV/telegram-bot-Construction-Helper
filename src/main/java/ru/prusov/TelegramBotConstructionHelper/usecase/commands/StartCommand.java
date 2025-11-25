@@ -49,8 +49,6 @@ public class StartCommand extends AbstractCommand {
             Photo photo = logo.get();
             sendPhotoAndTrack(chatId, photo.getPhotoId(), commonInfo.getMessageId() + 1);
         }
-
-
         replyAndTrack(chatId,
                 TextConstants.START_MESSAGE,
                 inlineKeyboard,
@@ -60,11 +58,12 @@ public class StartCommand extends AbstractCommand {
     private InlineKeyboardMarkup buildInlineKeyboardWithRoleOfUser(Role role) {
         if (ADMIN.equals(role)) {
             return KeyboardFactory.getInlineKeyboard(
-                    List.of("Строительство", "Инженерные сети", "Автоматика и система управления", "Настройки"),
-                    List.of(1, 1, 1, 1),
-                    List.of(CONSTRUCTION, ENGINEERING, AUTOMATIZATION, SETTINGS)
+                    List.of("Строительство", "Инженерные сети", "Автоматика и система управления", "Договора", "Настройки"),
+                    List.of(1, 1, 1, 1, 1),
+                    List.of(CONSTRUCTION, ENGINEERING, AUTOMATIZATION, CONTRACTS, SETTINGS)
             );
         }
+
         return KeyboardFactory.getInlineKeyboard(
                 List.of("Строительство", "Инженерные сети", "Автоматика и система управления"),
                 List.of(1, 1, 1),

@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 public class CallbackData {
     public static final String START = "start";
     public static final String SETTINGS = "settings";
+    public static final String CONTRACTS = "contracts";
     public final static String ENGINEERING = "engineering";
     public static final String LOGO_CHANGE = "logo_change";
-
     public final static String CONSTRUCTION = "construction";
     public static final String PREV_CONSTRUCTION = "prev_construction";
     public static final String NEXT_CONSTRUCTION = "next_construction";
@@ -25,5 +25,8 @@ public class CallbackData {
     public final static String ARTICLE_AUTOMATICS = "article_automatics";
     public final static String CONTACT_AUTOMATICS = "contact_automatics";
 
+    public static final String CONTRACTS_CONTRACT = "contracts_contract";
+    public static final String CONTRACTS_PAYMENTS = "contracts_payments";
+    public static final String CONTRACTS_CONTRACTOR = "contracts_contractor";
 
 }
