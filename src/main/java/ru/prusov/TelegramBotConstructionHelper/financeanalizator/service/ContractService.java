@@ -1,5 +1,7 @@
 package ru.prusov.TelegramBotConstructionHelper.financeanalizator.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto.ContractDTO;
@@ -21,10 +23,10 @@ public class ContractService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContractDTO> findAll() {
-        return contractRepository.findAll().stream()
-                .map(this::convertToDto)
-                .toList();
+    public Page<ContractDTO> findAll(Pageable pageable) {
+        Page<ContractDTO> contractDTOS = contractRepository.findAll(pageable)
+                .map(this::convertToDto);
+        return contractDTOS;
     }
 
     private ContractDTO convertToDto(Contract contract) {
@@ -62,8 +64,8 @@ public class ContractService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContractWithTotalPaymentsDTO> getAllContractDto() {
-        return contractRepository.getAllContractDto();
+    public Page<ContractWithTotalPaymentsDTO> getAllContractDto(Pageable pageable) {
+        return contractRepository.getAllContractDto(pageable);
     }
 
     @Transactional(readOnly = true)

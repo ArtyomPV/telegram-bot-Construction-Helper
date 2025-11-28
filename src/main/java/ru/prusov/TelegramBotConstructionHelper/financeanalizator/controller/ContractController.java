@@ -1,6 +1,8 @@
 package ru.prusov.TelegramBotConstructionHelper.financeanalizator.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto.ContractDTO;
@@ -23,13 +25,13 @@ public class ContractController {
     }
 
     @GetMapping
-    public List<ContractDTO> getAllContracts() {
-        return contractService.findAll();
+    public Page<ContractDTO> getAllContracts(Pageable pageable) {
+        return contractService.findAll(pageable);
     }
 
     @GetMapping("/with-payments")
-    public List<ContractWithTotalPaymentsDTO> getContracts() {
-        return contractService.getAllContractDto();
+    public Page<ContractWithTotalPaymentsDTO> getContracts(Pageable pageable) {
+        return contractService.getAllContractDto(pageable);
     }
 
     @GetMapping("/{id}")

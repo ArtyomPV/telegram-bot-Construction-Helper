@@ -3,6 +3,10 @@ package ru.prusov.TelegramBotConstructionHelper.usecase.callback.contract;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.prusov.TelegramBotConstructionHelper.dto.CommonInfo;
 import ru.prusov.TelegramBotConstructionHelper.factory.KeyboardFactory;
@@ -20,6 +24,8 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @RequiredArgsConstructor
 public class ContractCallbackCommand extends AbstractCallbackCommand {
     private final ContractService contractService;
+    private int pageSize = 5;
+    private int pageNumber = 0;
 
     @Override
     protected void doExecute(CommonInfo commonInfo) {
@@ -27,7 +33,8 @@ public class ContractCallbackCommand extends AbstractCallbackCommand {
         int position = 0;
         String header = "";
         StringBuilder content = new StringBuilder();
-        List<ContractDTO> contractDTOList = contractService.findAll();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("startDate").descending());
+        Page<ContractDTO> contractDTOList = contractService.findAll(pageable);
         if(contractDTOList.isEmpty()){
             content.append("Сохраненных договоров нет");
         } else {
