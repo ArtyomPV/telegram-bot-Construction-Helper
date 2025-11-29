@@ -1,4 +1,4 @@
-package ru.prusov.TelegramBotConstructionHelper.usecase.callback.contract;
+package ru.prusov.TelegramBotConstructionHelper.usecase.callback.financeanalizator.contract;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
