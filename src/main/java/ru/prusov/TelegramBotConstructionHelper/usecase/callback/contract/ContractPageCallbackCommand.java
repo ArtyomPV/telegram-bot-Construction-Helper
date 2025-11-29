@@ -24,32 +24,29 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ContractCallbackCommand extends AbstractCallbackCommand {
+public class ContractPageCallbackCommand extends AbstractCallbackCommand {
     private final ContractService contractService;
     private final String BUTTON_PREVIOUS = "⬅\uFE0F Предыдущий список";
     private final String BUTTON_NEXT = "Следующий список ➡\uFE0F";
     private final String BUTTON_BACK = "Назад";
-    int nextPage;
-    int previousPage;
+
+
 
     @Override
     protected void doExecute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
-        String currentMessageText = commonInfo.getMessageText();
-        int pageNumber = getPageNumber(currentMessageText);
-        nextPage = pageNumber + 1;
-        previousPage = pageNumber - 1;
-        Pageable pageable = PageRequest.of(pageNumber, contractPageSize, Sort.by("startDate").descending());
+        String messageText = commonInfo.getMessageText();
+
+        int currentPageNumber = extractCurrentPage(messageText);
+        int position = currentPageNumber * contractPageSize;
+        Pageable pageable = PageRequest.of(currentPageNumber, contractPageSize, Sort.by("startDate").descending());
         Page<ContractDTO> contractDTOList = contractService.findAll(pageable);
 
-        int position = 0;
-
         StringBuilder contentText = new StringBuilder();
-
-        if (contractDTOList.isEmpty()) {
-            contentText.append("Сохраненных договоров нет");
+        if(contractDTOList.isEmpty()){
+            contentText.append("\uD83D\uDDD2 Договора закончились");
         } else {
-            for (ContractDTO contractDTO : contractDTOList) {
+            for(ContractDTO contractDTO: contractDTOList){
                 contentText.append(++position).append(". ");
                 contentText.append(contractDTO.getContractNumber()).append(" - ");
                 contentText.append(contractDTO.getDescription()).append("\n");
@@ -59,61 +56,53 @@ public class ContractCallbackCommand extends AbstractCallbackCommand {
                 contentText.append("   Статус договора: ")
                         .append(contractDTO.getIsCompleted() ? "Закрыт" : "В исполнении ")
                         .append("\n");
+
             }
         }
 
         replyAndTrack(chatId,
                 contentText.toString(),
-                getKeyboard(contractDTOList, pageNumber),
+                getKeyboard(contractDTOList, currentPageNumber),
                 commonInfo.getMessageId() + 1);
     }
 
-    private InlineKeyboardMarkup getKeyboard(Page<ContractDTO> page, int currentPage) {
-        boolean hasPrevious = currentPage > 0;
-        boolean hasNext = page.hasNext();
+    private InlineKeyboardMarkup getKeyboard(Page<ContractDTO> contractDTOList, int currentPageNumber){
+        boolean hasPrevious = currentPageNumber > 0;
+        boolean hasNext = contractDTOList.hasNext();
 
         List<String> buttonText = new ArrayList<>();
         List<Integer> buttonLayout = new ArrayList<>();
         List<String> buttonCallback = new ArrayList<>();
 
-        if (hasPrevious) {
+        if(hasPrevious){
             buttonText.add(BUTTON_PREVIOUS);
             buttonLayout.add(1);
-            buttonCallback.add(CONTRACTS_PAGE + previousPage);
-            log.info("======== " + CONTRACTS_PAGE + previousPage);
+            buttonCallback.add(CONTRACTS_PAGE + (currentPageNumber - 1));
         }
 
-        if (hasNext) {
+        if(hasNext){
             buttonText.add(BUTTON_NEXT);
             buttonLayout.add(1);
-            buttonCallback.add(CONTRACTS_PAGE + nextPage);
-            log.info("======== " + CONTRACTS_PAGE + nextPage);
+            buttonCallback.add(CONTRACTS_PAGE + (currentPageNumber + 1));
         }
 
         buttonText.add(BUTTON_BACK);
         buttonLayout.add(1);
         buttonCallback.add(CONTRACTS);
-
         return KeyboardFactory.getInlineKeyboard(
                 buttonText,
                 buttonLayout,
                 buttonCallback
         );
-
     }
 
-    private int getPageNumber(String callbackData) {
-
-        log.info("======================= " + callbackData);
-        String[] parts = callbackData.split("_");
-        if (callbackData.startsWith(CONTRACTS_PAGE)) {
-            try {
-                return Integer.parseInt(parts[2]);
-            } catch (NumberFormatException e) {
-                return 0;
-            }
+    private int extractCurrentPage(String messageText) {
+        String[] splitText = messageText.split("_");
+        try{
+           return Integer.parseInt(splitText[2]);
+        } catch (NumberFormatException e){
+            return 0;
         }
-        return 0;
     }
 
     @Override
@@ -123,6 +112,6 @@ public class ContractCallbackCommand extends AbstractCallbackCommand {
 
     @Override
     public String command() {
-        return CONTRACTS_CONTRACT;
+        return CONTRACTS_PAGE;
     }
 }
