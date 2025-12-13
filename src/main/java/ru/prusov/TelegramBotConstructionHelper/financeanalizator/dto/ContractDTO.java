@@ -2,12 +2,15 @@ package ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class ContractDTO {
@@ -20,5 +23,6 @@ public class ContractDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Boolean isCompleted;
+
 
 }

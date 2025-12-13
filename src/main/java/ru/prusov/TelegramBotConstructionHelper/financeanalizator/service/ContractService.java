@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto.ContractDTO;
+import ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto.ContractDTOFull;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto.ContractWithTotalPaymentsDTO;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.entity.Contract;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.repository.ContractRepository;
@@ -71,5 +72,28 @@ public class ContractService {
     @Transactional(readOnly = true)
     public ContractWithTotalPaymentsDTO getContractDto(Long contractId) {
         return contractRepository.findContractWithTotalPaymentsById(contractId);
+    }
+
+    @Transactional
+    public void deleteByContractNumber(String contractNumber){
+        contractRepository.deleteByContractNumber(contractNumber);
+    }
+
+
+    public Contract convertToContract(ContractDTOFull contractDTO){
+        Contract contract = new Contract();
+        contract.setContractNumber(contractDTO.getContractNumber());
+        contract.setDescription(contractDTO.getDescription());
+        contract.setContractAmount(contractDTO.getContractAmount());
+        contract.setContractor(contractDTO.getContractor());
+        contract.setCustomer(contractDTO.getCustomer());
+        contract.setStartDate(contractDTO.getStartDate());
+        contract.setEndDate(contractDTO.getEndDate());
+        contract.setIsCompleted(false);
+        return contract;
+    }
+    @Transactional(readOnly = true)
+    public Optional<Contract> getContractByContractNumber(String messageText) {
+        return contractRepository.findByContractNumber(messageText);
     }
 }
