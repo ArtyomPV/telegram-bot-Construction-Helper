@@ -17,7 +17,7 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @RequiredArgsConstructor
 public class ContractStartCallbackCommand extends AbstractCallbackCommand {
 
-    private final String CONTENT = """
+    private final String CONTENT_TEXT = """
             Данный раздел предназначен для работы с договорами 📄: 
             1️⃣   регистрация ✍️ и редактирование договорных документов ✏️, 
             2️⃣   учёт и фиксация поступлений денежных средств 💳 по договорам. 
@@ -34,7 +34,7 @@ public class ContractStartCallbackCommand extends AbstractCallbackCommand {
         deleteAllMessage(chatId);
 
         replyAndTrack(chatId,
-                CONTENT,
+                CONTENT_TEXT,
                 KeyboardFactory.getInlineKeyboard(
                         List.of("Договора", "Платежи", "Контрагенты", "Назад"),
                         List.of(1, 1, 1, 1),

@@ -35,5 +35,7 @@ public class CallbackData {
 
     public static final String CUSTOMER_SAVE = "customer_save";
     public static final String CONTRACTOR_SAVE = "contractor_save";
+    public static final String SAVE_UPDATED_CONTRACT = "save_update_contract";
+    public static final String UPDATE_NEW_OPTION_CONTRACT = "update_new_option_contract";
 
 }

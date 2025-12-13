@@ -46,9 +46,11 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("DELETE FROM Contract c WHERE c.contractNumber = :contractNumber")
     void deleteByContractNumber(@Param("contractNumber") String contractNumber);
 
-
-
-
-    @Query("SELECT c FROM Contract c WHERE c.contractNumber = :contractNumber")
+    @Query("SELECT c FROM Contract c " +
+            "LEFT JOIN FETCH c.contractor " +
+            "LEFT JOIN FETCH c.customer " +
+            "WHERE c.contractNumber = :contractNumber")
     Optional<Contract> findByContractNumber(@Param("contractNumber") String contractNumber);
+
+
 }

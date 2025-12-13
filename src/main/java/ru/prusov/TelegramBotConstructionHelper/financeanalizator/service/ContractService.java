@@ -1,5 +1,7 @@
 package ru.prusov.TelegramBotConstructionHelper.financeanalizator.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,14 +16,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class ContractService {
 
     private final ContractRepository contractRepository;
+    private final ContractDTOFull contractDTOFull;
 
-    public ContractService(ContractRepository contractRepository) {
-        this.contractRepository = contractRepository;
-    }
+//    public ContractService(ContractRepository contractRepository) {
+//        this.contractRepository = contractRepository;
+//    }
 
     @Transactional(readOnly = true)
     public Page<ContractDTO> findAll(Pageable pageable) {
@@ -31,6 +34,7 @@ public class ContractService {
     }
 
     private ContractDTO convertToDto(Contract contract) {
+
         return new ContractDTO(
                 contract.getId(),
                 contract.getContractNumber(),
@@ -42,6 +46,22 @@ public class ContractService {
                 contract.getEndDate(),
                 contract.getIsCompleted()
         );
+    }
+
+    public ContractDTOFull convertToDtoFull(Contract contract) {
+        contractDTOFull.setId(contract.getId());
+        contractDTOFull.setContractNumber(contract.getContractNumber());
+        contractDTOFull.setDescription(contract.getDescription());
+        contractDTOFull.setCustomer(contract.getCustomer() != null ? contract.getCustomer() : null);
+        contractDTOFull.setContractor(contract.getContractor() != null ? contract.getContractor() : null);
+        contractDTOFull.setContractAmount(contract.getContractAmount());
+        contractDTOFull.setStartDate(contract.getStartDate());
+        contractDTOFull.setEndDate(contract.getEndDate());
+        contractDTOFull.setIsCompleted(contract.getIsCompleted());
+
+
+        return contractDTOFull;
+
     }
 
     @Transactional(readOnly = true)
@@ -79,8 +99,7 @@ public class ContractService {
         contractRepository.deleteByContractNumber(contractNumber);
     }
 
-
-    public Contract convertToContract(ContractDTOFull contractDTO){
+    public Contract convertToContract( ContractDTOFull contractDTO){
         Contract contract = new Contract();
         contract.setContractNumber(contractDTO.getContractNumber());
         contract.setDescription(contractDTO.getDescription());
@@ -89,11 +108,41 @@ public class ContractService {
         contract.setCustomer(contractDTO.getCustomer());
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
-        contract.setIsCompleted(false);
+        contract.setIsCompleted(contractDTO.getIsCompleted());
         return contract;
     }
+
+    public Contract convertToContract(Contract contract, ContractDTOFull contractDTO){
+        contract.setContractNumber(contractDTO.getContractNumber());
+        contract.setDescription(contractDTO.getDescription());
+        contract.setContractAmount(contractDTO.getContractAmount());
+        contract.setContractor(contractDTO.getContractor());
+        contract.setCustomer(contractDTO.getCustomer());
+        contract.setStartDate(contractDTO.getStartDate());
+        contract.setEndDate(contractDTO.getEndDate());
+        contract.setIsCompleted(contractDTO.getIsCompleted());
+        return contract;
+    }
+
     @Transactional(readOnly = true)
     public Optional<Contract> getContractByContractNumber(String messageText) {
         return contractRepository.findByContractNumber(messageText);
+    }
+
+    public boolean updateContract(ContractDTOFull contractDTOFull) {
+        Long contractId = contractDTOFull.getId();
+        try {
+            Contract existedContract = contractRepository.findById(contractId).orElseThrow(
+                    () ->
+                        new EntityNotFoundException(
+                                "Contract not found with id: " + contractId)
+            );
+
+            Contract contract = convertToContract(existedContract, contractDTOFull);
+            contractRepository.save(contract);
+        } catch (EntityNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }
