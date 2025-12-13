@@ -26,9 +26,13 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @RequiredArgsConstructor
 public class ContractCallbackCommand extends AbstractCallbackCommand {
     private final ContractService contractService;
-    private final String BUTTON_PREVIOUS = "⬅\uFE0F Предыдущий список";
-    private final String BUTTON_NEXT = "Следующий список ➡\uFE0F";
     private final String BUTTON_BACK = "Назад";
+    private final String BUTTON_NEXT = "Следующий список ➡\uFE0F";
+    private final String BUTTON_PREVIOUS = "⬅\uFE0F Предыдущий список";
+    private final String BUTTON_DELETE = "Удалить договор";
+    private final String BUTTON_CREATE = "Сохранить договор";
+    private final String BUTTON_UPDATE = "Редактировать договор";
+
     int nextPage;
     int previousPage;
 
@@ -36,9 +40,13 @@ public class ContractCallbackCommand extends AbstractCallbackCommand {
     protected void doExecute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         String currentMessageText = commonInfo.getMessageText();
+
+        deleteAllMessage(chatId);
+
         int pageNumber = getPageNumber(currentMessageText);
         nextPage = pageNumber + 1;
         previousPage = pageNumber - 1;
+
         Pageable pageable = PageRequest.of(pageNumber, contractPageSize, Sort.by("startDate").descending());
         Page<ContractDTO> contractDTOList = contractService.findAll(pageable);
 
@@ -57,7 +65,7 @@ public class ContractCallbackCommand extends AbstractCallbackCommand {
                 contentText.append("   Завершение работ: ").append(contractDTO.getEndDate()).append("\n");
                 contentText.append("   Стоимость договора: ").append(contractDTO.getContractAmount()).append("\n");
                 contentText.append("   Статус договора: ")
-                        .append(contractDTO.getIsCompleted() ? "Закрыт" : "В исполнении ")
+                        .append(contractDTO.getIsCompleted() ? "Закрыт ✅" : "В исполнении ❌")
                         .append("\n");
             }
         }
@@ -68,43 +76,51 @@ public class ContractCallbackCommand extends AbstractCallbackCommand {
                 commonInfo.getMessageId() + 1);
     }
 
-    private InlineKeyboardMarkup getKeyboard(Page<ContractDTO> page, int currentPage) {
-        boolean hasPrevious = currentPage > 0;
-        boolean hasNext = page.hasNext();
+    private InlineKeyboardMarkup getKeyboard(Page<ContractDTO> contractDTOList, int currentPageNumber){
+        boolean hasPrevious = currentPageNumber > 0;
+        boolean hasNext = contractDTOList.hasNext();
 
         List<String> buttonText = new ArrayList<>();
         List<Integer> buttonLayout = new ArrayList<>();
         List<String> buttonCallback = new ArrayList<>();
 
-        if (hasPrevious) {
+        if(hasPrevious){
             buttonText.add(BUTTON_PREVIOUS);
             buttonLayout.add(1);
-            buttonCallback.add(CONTRACTS_PAGE + previousPage);
-            log.info("======== " + CONTRACTS_PAGE + previousPage);
+            buttonCallback.add(CONTRACTS_PAGE + (currentPageNumber - 1));
         }
 
-        if (hasNext) {
+        if(hasNext){
             buttonText.add(BUTTON_NEXT);
-            buttonLayout.add(1);
-            buttonCallback.add(CONTRACTS_PAGE + nextPage);
-            log.info("======== " + CONTRACTS_PAGE + nextPage);
+            if (hasPrevious) {
+                buttonLayout.set(0, 2);
+            } else {
+                buttonLayout.add(1);
+            }
+            buttonCallback.add(CONTRACTS_PAGE + (currentPageNumber + 1));
         }
 
+        buttonText.add(BUTTON_CREATE);
+        buttonText.add(BUTTON_UPDATE);
+        buttonText.add(BUTTON_DELETE);
         buttonText.add(BUTTON_BACK);
         buttonLayout.add(1);
+        buttonLayout.add(1);
+        buttonLayout.add(1);
+        buttonLayout.add(1);
+        buttonCallback.add(CONTRACTS_CREATE);
+        buttonCallback.add(CONTRACTS_UPDATE);
+        buttonCallback.add(CONTRACTS_DELETE);
         buttonCallback.add(CONTRACTS);
-
         return KeyboardFactory.getInlineKeyboard(
                 buttonText,
                 buttonLayout,
                 buttonCallback
         );
-
     }
 
     private int getPageNumber(String callbackData) {
 
-        log.info("======================= " + callbackData);
         String[] parts = callbackData.split("_");
         if (callbackData.startsWith(CONTRACTS_PAGE)) {
             try {

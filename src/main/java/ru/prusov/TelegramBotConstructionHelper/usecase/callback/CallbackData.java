@@ -26,8 +26,14 @@ public class CallbackData {
     public final static String CONTACT_AUTOMATICS = "contact_automatics";
 
     public static final String CONTRACTS_PAGE = "CONTRACTS_PAGE_";
+    public static final String CONTRACTS_CREATE = "contracts_create";
+    public static final String CONTRACTS_UPDATE = "contracts_update";
+    public static final String CONTRACTS_DELETE = "contracts_delete";
     public static final String CONTRACTS_CONTRACT = "contracts_contract";
     public static final String CONTRACTS_PAYMENTS = "contracts_payments";
     public static final String CONTRACTS_CONTRACTOR = "contracts_contractor";
+
+    public static final String CUSTOMER_SAVE = "customer_save";
+    public static final String CONTRACTOR_SAVE = "contractor_save";
 
 }

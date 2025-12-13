@@ -26,9 +26,12 @@ import static ru.prusov.TelegramBotConstructionHelper.usecase.callback.CallbackD
 @RequiredArgsConstructor
 public class ContractPageCallbackCommand extends AbstractCallbackCommand {
     private final ContractService contractService;
-    private final String BUTTON_PREVIOUS = "⬅\uFE0F Предыдущий список";
-    private final String BUTTON_NEXT = "Следующий список ➡\uFE0F";
     private final String BUTTON_BACK = "Назад";
+    private final String BUTTON_NEXT = "Следующий список ➡\uFE0F";
+    private final String BUTTON_PREVIOUS = "⬅\uFE0F Предыдущий список";
+    private final String BUTTON_DELETE = "Удалить договор";
+    private final String BUTTON_CREATE = "Сохранить договор";
+    private final String BUTTON_UPDATE = "Редактировать договор";
 
 
 
@@ -36,6 +39,8 @@ public class ContractPageCallbackCommand extends AbstractCallbackCommand {
     protected void doExecute(CommonInfo commonInfo) {
         Long chatId = commonInfo.getChatId();
         String messageText = commonInfo.getMessageText();
+
+        deleteAllMessage(chatId);
 
         int currentPageNumber = extractCurrentPage(messageText);
         int position = currentPageNumber * contractPageSize;
@@ -54,7 +59,7 @@ public class ContractPageCallbackCommand extends AbstractCallbackCommand {
                 contentText.append("   Завершение работ: ").append(contractDTO.getEndDate()).append("\n");
                 contentText.append("   Стоимость договора: ").append(contractDTO.getContractAmount()).append("\n");
                 contentText.append("   Статус договора: ")
-                        .append(contractDTO.getIsCompleted() ? "Закрыт" : "В исполнении ")
+                        .append(contractDTO.getIsCompleted() ? "Закрыт ✅" : "В исполнении ❌")
                         .append("\n");
 
             }
@@ -82,12 +87,25 @@ public class ContractPageCallbackCommand extends AbstractCallbackCommand {
 
         if(hasNext){
             buttonText.add(BUTTON_NEXT);
-            buttonLayout.add(1);
+            if (hasPrevious) {
+                buttonLayout.set(0, 2);
+            } else {
+                buttonLayout.add(1);
+            }
             buttonCallback.add(CONTRACTS_PAGE + (currentPageNumber + 1));
         }
 
+        buttonText.add(BUTTON_CREATE);
+        buttonText.add(BUTTON_UPDATE);
+        buttonText.add(BUTTON_DELETE);
         buttonText.add(BUTTON_BACK);
         buttonLayout.add(1);
+        buttonLayout.add(1);
+        buttonLayout.add(1);
+        buttonLayout.add(1);
+        buttonCallback.add(CONTRACTS_CREATE);
+        buttonCallback.add(CONTRACTS_UPDATE);
+        buttonCallback.add(CONTRACTS_DELETE);
         buttonCallback.add(CONTRACTS);
         return KeyboardFactory.getInlineKeyboard(
                 buttonText,
