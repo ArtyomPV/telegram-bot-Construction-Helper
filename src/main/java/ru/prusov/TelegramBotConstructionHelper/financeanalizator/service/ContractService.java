@@ -129,6 +129,7 @@ public class ContractService {
         return contractRepository.findByContractNumber(messageText);
     }
 
+    @Transactional
     public boolean updateContract(ContractDTOFull contractDTOFull) {
         Long contractId = contractDTOFull.getId();
         try {
