@@ -26,6 +26,7 @@ public class CallbackRouter {
         if (callbackDataCommand.startsWith(CONTRACTS_PAGE)) {
             callbackDataCommand = callbackDataCommand.substring(0, callbackDataCommand.length() - 1);
         }
-        return Optional.ofNullable(handlerMap.get(callbackDataCommand));
+        String[] splitCallbackDataCommand = callbackDataCommand.trim().split(":");
+        return Optional.ofNullable(handlerMap.get(splitCallbackDataCommand[0]));
     }
 }
