@@ -38,4 +38,7 @@ public class CallbackData {
     public static final String SAVE_UPDATED_CONTRACT = "save_update_contract";
     public static final String UPDATE_NEW_OPTION_CONTRACT = "update_new_option_contract";
 
+    public static final String PAYMENT_ADD = "payment_add";
+    public static final String PAYMENT_UPDATE = "payment_update";
+    public static final String PAYMENT_REMOVE = "payment_remove";
 }
