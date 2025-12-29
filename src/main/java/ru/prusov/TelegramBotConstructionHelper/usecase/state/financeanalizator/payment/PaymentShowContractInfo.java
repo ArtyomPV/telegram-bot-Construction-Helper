@@ -45,23 +45,25 @@ public class PaymentShowContractInfo extends AbstractState {
         Optional<Contract> optionalContract = contractService.getContractByContractNumber(messageText);
 
         optionalContract.ifPresentOrElse(contract -> {
-            List<PaymentDTO> paymentsByContractId = paymentService.findPaymentsByContractId(contract.getId());
+            Long contractId = contract.getId();
+            List<PaymentDTO> paymentsByContractId = paymentService.findPaymentsByContractId(contractId);
             BigDecimal sumAllPaymentsByContract = getSumAllPaymentsByContract(paymentsByContractId);
             String contentText = getContentText(paymentsByContractId, contract, sumAllPaymentsByContract);
 
+            stateService.clearUserStateByChatId(chatId);
             replyAndTrack(chatId,
                     contentText,
-                    getInlineKeyboard(),
+                    getInlineKeyboard(contractId),
                     commonInfo.getMessageId() + 1);
         }, () -> {
             replyAndTrack(chatId, CONTENT_TEXT_NO_CONTRACT, commonInfo.getMessageId() + 1);
         });
     }
-    private InlineKeyboardMarkup getInlineKeyboard(){
+    private InlineKeyboardMarkup getInlineKeyboard(Long contractId){
         return KeyboardFactory.getInlineKeyboard(
                 List.of("Добавить запись", "Изменить запись", "Удалить запись", "В меню договоров"),
                 List.of(1, 1, 1, 1),
-                List.of(PAYMENT_ADD, PAYMENT_UPDATE, PAYMENT_REMOVE, CONTRACTS)
+                List.of(PAYMENT_ADD + ":" + contractId, PAYMENT_UPDATE + ":" + contractId, PAYMENT_REMOVE + ":" + contractId, CONTRACTS)
         );
     }
 

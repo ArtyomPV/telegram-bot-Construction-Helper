@@ -5,10 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.dto.PaymentDTO;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.entity.Payment;
+import ru.prusov.TelegramBotConstructionHelper.financeanalizator.entity.PaymentType;
 import ru.prusov.TelegramBotConstructionHelper.financeanalizator.repository.PaymentRepository;
 
 import java.util.List;
 import java.util.Optional;
+
+import static ru.prusov.TelegramBotConstructionHelper.financeanalizator.entity.PaymentType.ADVANCE;
+import static ru.prusov.TelegramBotConstructionHelper.financeanalizator.entity.PaymentType.PENALTY;
 
 @Service
 @RequiredArgsConstructor
@@ -57,4 +61,15 @@ public class PaymentService {
         );
     }
 
+    public PaymentType convertTextToPaymentType(String text){
+        switch (text.toLowerCase()){
+            case "аванс" -> {
+                return ADVANCE;
+            }
+            case "неустойка", "штраф" -> {
+                return PENALTY;
+            }
+            default -> throw new IllegalArgumentException();
+        }
+    }
 }
