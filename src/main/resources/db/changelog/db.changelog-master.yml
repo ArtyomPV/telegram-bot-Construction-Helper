@@ -7,3 +7,11 @@ databaseChangeLog:
       file: db/changelog/changelog-1.0/002-create-construction-item-table.yml
   - include:
       file: db/changelog/changelog-1.0/003-create-article-table.yml
+  - include:
+      file: db/changelog/changelog-2.0/000-create-contractor-table.yml
+  - include:
+      file: db/changelog/changelog-2.0/001-create-customers-table.yml
+  - include:
+      file: db/changelog/changelog-2.0/002-create-contracts-table.yml
+  - include:
+      file: db/changelog/changelog-2.0/003-create-payments-table.yml

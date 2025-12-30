@@ -22,9 +22,7 @@ public class TelegramCommandMenu {
 
     @PostConstruct
     public void registerCommands() {
-
         try {
-
             List<BotCommand> commands = List.of(
                     new BotCommand("start", "Приветствие"),
                     new BotCommand("info", "Информация, как пользоваться ботом"),

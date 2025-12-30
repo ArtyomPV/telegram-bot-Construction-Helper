@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-contracts-table
+      author: Prusov # Укажите ваше имя/имя разработчика
+      changes:
+        - createTable:
+            tableName: contracts # Имя таблицы, соответствующее @Table(name = "contractors"))
+            columns:
+              - column:
+                  name: id # Соответствует полю id
+                  type: BIGINT # Обычно для ID используется BIGINT
+                  autoIncrement: true # Соответствует GenerationType.IDENTITY
+                  constraints:
+                    primaryKey: true # Указывает, что это первичный ключ
+                    nullable: false # Первичный ключ не может быть null
+              - column:
+                  name: contract_number # Соответствует полю name
+                  type: VARCHAR(255) # Или другой подходящий тип для строки
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: description # Соответствует полю specialization
+                  type: VARCHAR(50) # Тип для хранения enum значений (строка)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id # Соответствует полю role
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_contracts_customer_id
+                    references: customers(id)
+              - column:
+                  name: contractor_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_contracts_contractor_id
+                    references: contractors(id)
+              - column:
+                  name: contract_amount
+                  type: decimal(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_completed
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_contracts_contract_number
+            tableName: contracts
+            columns:
+              - column:
+                  name: contract_number
+                  type: varchar(255)
+
+
+        - createIndex:
+            indexName: idx_contracts_is_completed
+            tableName: contracts
+            columns:
+              - column:
+                  name: is_completed
+                  type: boolean

@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-payments-table
+      author: Prusov # Укажите ваше имя/имя разработчика
+      changes:
+        - createTable:
+            tableName: payments # Имя таблицы, соответствующее @Table(name = "contractors"))
+            columns:
+              - column:
+                  name: id # Соответствует полю id
+                  type: BIGINT # Обычно для ID используется BIGINT
+                  autoIncrement: true # Соответствует GenerationType.IDENTITY
+                  constraints:
+                    primaryKey: true # Указывает, что это первичный ключ
+                    nullable: false # Первичный ключ не может быть null
+              - column:
+                  name: payment_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: contract_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payments_contract_id
+                    references: contracts(id)
